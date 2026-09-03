@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spot It — Inbox Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FFFFFF;
+    --ink:#535353;
+    --mid:#A8A8A8;
+    --hair:#E6E6E6;
+    --px:"Press Start 2P", ui-monospace, monospace;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+    --real:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --det:74px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:var(--px);
+    padding:26px 0 40px;min-height:100vh;
+    display:flex;flex-direction:column;
+  }
+  .wrap{width:100%;max-width:900px;margin:0 auto;padding:0 18px}
+
+  /* ---------- hud ---------- */
+  .hud{
+    display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+    font-size:11px;letter-spacing:.16em;color:var(--ink);
+  }
+  .hud .sc{color:var(--mid);font-size:10px;letter-spacing:.2em}
+  .hud .sc b{color:var(--ink);font-weight:400}
+
+  /* ---------- stage ---------- */
+  .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:30px 0 8px}
+  .stage > *{width:100%}
+
+  /* ---------- the email: the only real object here ---------- */
+  .client{
+    max-width:640px;margin:0 auto;background:var(--paper);
+    border:1px solid #DADCE0;border-radius:8px;overflow:hidden;
+    box-shadow:0 1px 3px rgba(0,0,0,.13),0 8px 26px rgba(0,0,0,.07);
+    font-family:var(--real);
+  }
+  .bar{
+    background:#F6F8FA;border-bottom:1px solid #E8EAED;
+    display:flex;align-items:center;gap:13px;padding:9px 14px;
+    font-size:12px;color:#5F6368;
+  }
+  .bar .sp{flex:1}
+  .bar .ic{letter-spacing:.3em;color:#BDC1C6;font-size:13px}
+  .subject{font-size:19px;font-weight:500;color:#202124;padding:17px 18px 12px;line-height:1.32}
+  .sender{display:flex;gap:12px;padding:0 18px 14px;border-bottom:1px solid #EDEFF2;align-items:flex-start}
+  .av{
+    width:40px;height:40px;border-radius:50%;flex:none;background:#E3E6EA;color:#70757A;
+    display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;
+  }
+  .who{flex:1;min-width:0}
+  .nm{font-size:14px;font-weight:600;color:#202124}
+  .addr,.meta{font-size:13px;color:#5F6368;line-height:1.55;word-break:break-word}
+  .stamp{font-size:12px;color:#80868B;flex:none;padding-top:2px}
+  .body{padding:17px 18px 24px;font-size:14.5px;line-height:1.68;color:#202124}
+  .body p{margin:0 0 12px}
+  .body p:last-child{margin-bottom:0}
+  .sig{color:#5F6368;font-size:13.5px}
+  .link{color:#1A73E8;text-decoration:underline}
+  .urlbar{
+    display:inline-block;margin-top:4px;background:#F1F3F4;border:1px solid #E0E3E7;
+    border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:12px;color:#5F6368;
+  }
+  .attach{
+    display:inline-flex;align-items:center;gap:9px;margin-top:6px;
+    border:1px solid #E0E3E7;border-radius:6px;padding:9px 12px;background:#FAFBFC;
+    font-size:13.5px;color:#202124;
+  }
+  .attach .fx{
+    width:28px;height:28px;border-radius:4px;background:#E8EAED;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:8px;color:#70757A;
+  }
+
+  /* ---------- clickable evidence ---------- */
+  .tap{cursor:pointer;border-bottom:2px dotted #9AA0A6;border-radius:0}
+  .tap:hover,.tap:focus-visible{background:#F1F3F4;outline:none}
+  .tap:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .tap.no{animation:shake .24s steps(2) 2}
+  @keyframes shake{0%{translate:0}50%{translate:5px}100%{translate:0}}
+  .tap.hit{
+    background:var(--ink);color:#fff;border-bottom-color:var(--ink);
+    padding:1px 4px;
+  }
+  .tap.hit .urlbar,.tap.hit.urlbar,.tap.hit .fx{background:transparent;border-color:#8A8A8A;color:#fff}
+  .locked .tap{cursor:default;border-bottom-color:transparent}
+  .locked .tap:hover{background:transparent}
+  .locked .tap.hit{background:var(--ink)}
+
+  /* ---------- briefing (intro) ---------- */
+  .bubble{
+    position:relative;max-width:640px;margin:0 auto;
+    border:3px solid var(--ink);background:var(--paper);
+    padding:18px 20px;font-size:11px;line-height:2.05;color:var(--ink);
+  }
+  .bubble p{margin:0 0 10px;min-height:2.05em}
+  .bubble p:last-child{margin:0}
+  .bubble b{font-weight:400;text-shadow:1px 0 0 currentColor;letter-spacing:.04em}
+  .caret{animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* ---------- the world ---------- */
+  .world{position:relative;margin-top:14px}
+  .world::after{
+    content:"";position:absolute;left:0;right:0;bottom:26px;height:20px;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='20'%3E%3Crect width='200' height='2' fill='%23535353'/%3E%3Crect x='16' y='8' width='9' height='2' fill='%23A8A8A8'/%3E%3Crect x='44' y='13' width='3' height='2' fill='%23A8A8A8'/%3E%3Crect x='71' y='7' width='13' height='2' fill='%23A8A8A8'/%3E%3Crect x='103' y='12' width='5' height='2' fill='%23A8A8A8'/%3E%3Crect x='127' y='9' width='3' height='2' fill='%23A8A8A8'/%3E%3Crect x='149' y='14' width='8' height='2' fill='%23A8A8A8'/%3E%3Crect x='178' y='8' width='6' height='2' fill='%23A8A8A8'/%3E%3C/svg%3E");
+    background-repeat:repeat-x;
+  }
+  .inner{position:relative;max-width:900px;margin:0 auto;padding:0 18px;height:190px}
+
+  .talk{
+    position:absolute;top:0;left:18px;right:18px;
+    border:3px solid var(--ink);background:var(--paper);
+    padding:11px 13px;font-size:10px;line-height:1.95;color:var(--ink);
+    min-height:46px;display:flex;align-items:center;
+  }
+  .talk .tail{
+    position:absolute;bottom:-11px;width:12px;height:8px;background:var(--paper);
+    clip-path:polygon(0 0,100% 0,50% 100%);
+  }
+  .talk .tail::before{
+    content:"";position:absolute;left:-4px;top:0;width:20px;height:14px;background:var(--ink);
+    z-index:-1;clip-path:polygon(0 0,100% 0,50% 100%);
+  }
+  .talk b{font-weight:400;text-shadow:1px 0 0 currentColor;letter-spacing:.04em}
+
+  .det{
+    position:absolute;left:18px;bottom:44px;width:var(--det);
+    cursor:pointer;transform-origin:50% 100%;
+  }
+  .det svg{display:block;width:100%;height:auto;image-rendering:pixelated}
+  .det:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+  .det.ouch{animation:ouch .5s steps(4)}
+  @keyframes ouch{
+    0%{scale:1 1;rotate:0deg}
+    25%{scale:1.16 .8;rotate:0deg}
+    50%{scale:.92 1.06;rotate:-9deg}
+    75%{scale:1.03 .98;rotate:7deg}
+    100%{scale:1 1;rotate:0deg}
+  }
+
+  /* ---------- below the line ---------- */
+  .below{margin-top:22px}
+  .lesson{border-top:2px solid var(--ink);border-bottom:1px solid var(--hair);padding:14px 0 16px}
+  .lesson .tag{display:block;font-size:9px;letter-spacing:.22em;color:var(--mid);margin-bottom:9px}
+  .lesson .txt{font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#3D3D3D}
+  .lesson .txt b{font-weight:700;color:#2B2B2B}
+  .hidden{display:none}
+
+  .controls{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .ctl{
+    font-family:var(--px);font-size:10px;letter-spacing:.12em;
+    padding:14px 20px;cursor:pointer;border:2px solid var(--ink);
+    background:var(--paper);color:var(--ink);border-radius:0;
+  }
+  .ctl:hover{background:var(--ink);color:var(--paper)}
+  .ctl:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+  .ctl.go{background:var(--ink);color:var(--paper)}
+  .ctl.go:hover{background:var(--paper);color:var(--ink)}
+  .note{font-size:9px;letter-spacing:.18em;color:var(--mid);align-self:center}
+
+  /* ---------- recap ---------- */
+  .recap h2{font-size:13px;letter-spacing:.1em;margin:0 0 6px;color:var(--ink)}
+  .recap .sub{font-family:var(--mono);font-size:13px;color:var(--mid);margin:0 0 16px}
+  .recap ol{margin:0;padding:0;list-style:none;counter-reset:r}
+  .recap li{
+    counter-increment:r;display:flex;gap:14px;padding:11px 0;border-top:1px solid var(--hair);
+    font-family:var(--mono);font-size:13.5px;color:#3D3D3D;line-height:1.5;
+  }
+  .recap li::before{content:counter(r,decimal-leading-zero);font-family:var(--px);font-size:9px;color:var(--mid);flex:none;padding-top:3px}
+
+  @media (min-width:760px){
+    :root{--det:88px}
+    body{padding:34px 0 56px}
+    .hud{font-size:13px}
+    .hud .sc{font-size:11px}
+    .bubble{font-size:12px;padding:22px 24px;line-height:2.15}
+    .talk{font-size:11px;padding:13px 16px;min-height:52px}
+    .inner{height:210px}
+    .det{bottom:46px}
+    .recap ol{display:grid;grid-template-columns:1fr 1fr;column-gap:30px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap hud">
+  <span>SPOT IT</span>
+  <span class="sc" id="score">CAUGHT <b>00</b> / 06</span>
+</div>
+
+<div class="stage">
+  <div>
+    <div id="brief">
+      <div class="bubble">
+        <p id="bl0"></p><p id="bl1"></p><p id="bl2"></p>
+      </div>
+    </div>
+    <div id="mailHost" class="hidden"><div class="client" id="mail"></div></div>
+  </div>
+</div>
+
+<div class="world">
+  <div class="inner" id="inner">
+    <div class="talk" id="talk"><span id="line">&nbsp;</span><i class="tail" id="tail" style="left:30px"></i></div>
+    <div class="det" id="det"></div>
+  </div>
+</div>
+
+<div class="wrap below">
+  <div class="lesson hidden" id="lesson"></div>
+  <div class="controls" id="controls"></div>
+</div>
+
+<script>
+/* ================= sprites ================= */
+const POSES = {
+  stand:["................................","...........##########...........","..........############..........","..........############..........","..........++++++++++++..........",".....######################.....","......++++++++++++++++++++......","...........++++++++++...........","...........##ww##ww##...........","...........##########...........","...........####++####...........","............########............","..............####..............","...###....#####++#####..........","..#ooo#..#####++++#####.........",".#ohooo######++++++#####........",".#ooooo##w###++++++###w##.......",".#ooooo##w###++++++###w##.......","..#ooo###w###++++++###w##.......","...###++#w###++++++###w##.......",".......##w###++++++###w##.......",".......++++++++ww++++++++.......",".......##w############w##.......",".......########ww########.......",".......########ww########.......","........#######..#######........","..........####....####..........","..........####....####..........","..........####....####..........",".........######..######.........",".........++++++..++++++.........","................................"],
+  walk1:["................................","...........##########...........","..........############..........","..........############..........","..........++++++++++++..........",".....######################.....","......++++++++++++++++++++......","...........++++++++++...........","...........##ww##ww##...........","...........##########...........","...........####++####...........","............########............","..............####..............","...###....#####++#####..........","..#ooo#..#####++++#####.........",".#ohooo######++++++#####........",".#ooooo##w###++++++###w##.......",".#ooooo##w###++++++###w##.......","..#ooo###w###++++++###w##.......","...###++#w###++++++###w##.......",".......##w###++++++###w##.......",".......++++++++ww++++++++.......",".......##w############w##.......",".......########ww########.......",".......########ww########.......","........#######..#######........","..........####....####..........","..........####....####..........",".........####......####.........","........######.....######.......","........++++++..................","................................"],
+  walk2:["................................","...........##########...........","..........############..........","..........############..........","..........++++++++++++..........",".....######################.....","......++++++++++++++++++++......","...........++++++++++...........","...........##ww##ww##...........","...........##########...........","...........####++####...........","............########............","..............####..............","...###....#####++#####..........","..#ooo#..#####++++#####.........",".#ohooo######++++++#####........",".#ooooo##w###++++++###w##.......",".#ooooo##w###++++++###w##.......","..#ooo###w###++++++###w##.......","...###++#w###++++++###w##.......",".......##w###++++++###w##.......",".......++++++++ww++++++++.......",".......##w############w##.......",".......########ww########.......",".......########ww########.......","........#######..#######........","..........####....####..........","..........####....####..........","...........####..####...........","..........############..........","................++++++..........","................................"],
+  found:["................................","...........##########...........","..........############..........","...###....############..........","..#ooo#...++++++++++++..........",".#ooooo####################.....",".#ooooo#++++++++++++++++++......",".#ooooo#...++++++++++...........","..#ooo#....##ww##ww##...........","...###.....##########...........","....++.....####++####...........",".....++.....########............","......++......####..............",".......++.#####++#####..........",".........#####++++#####.........","........#####++++++#####........",".......##w###++++++###w##.......",".......##w###++++++###w##.......",".......##w###++++++###w##.......",".......##w###++++++###w##.......",".......##w###++++++###w##.......",".......++++++++ww++++++++.......",".......##w############w##.......",".......########ww########.......",".......########ww########.......","........#######..#######........","..........####....####..........","..........####....####..........","..........####....####..........",".........######..######.........",".........++++++..++++++.........","................................"],
+  ouch:["..........############..........","..........############..........","..........++++++++++++..........",".....######################.....","......++++++++++++++++++++......","................................",".......##..............##.......","...........++++++++++...........","...........##ww##ww##...........","...........##########...........","...........####++####...........","............########............","..............####..............","...###....#####++#####..........","..#ooo#..#####++++#####.........",".#ohooo######++++++#####........",".#ooooo##w###++++++###w##.......",".#ooooo##w###++++++###w##.......","..#ooo###w###++++++###w##.......","...###++#w###++++++###w##.......",".......##w###++++++###w##.......",".......++++++++ww++++++++.......",".......##w############w##.......",".......########ww########.......",".......########ww########.......","........#######..#######........","..........####....####..........","..........####....####..........","..........####....####..........",".........######..######.........",".........++++++..++++++.........","................................"]
+};
+const SPAL = {"#":"#535353","+":"#A8A8A8"};   /* w, o, h fall through to paper */
+function sprite(name){
+  const g=POSES[name], r=[];
+  for(let y=0;y<g.length;y++)
+    for(let x=0;x<g[y].length;x++){
+      const c=SPAL[g[y][x]];
+      if(c) r.push(`<rect x="${x}" y="${y}" width="1" height="1" fill="${c}"/>`);
+    }
+  return `<svg viewBox="0 0 32 32" aria-label="A pixel detective in a hat holding a magnifying glass">${r.join("")}</svg>`;
+}
+
+/* ================= mails ================= */
+const MAILS = [
+  {
+    subject:"Mailbox storage almost full",
+    name:"IT Helpdesk", initials:"IT",
+    addr:'&lt;<span class="tap" data-flag="1">it-support@dentsu-helpdesk.com</span>&gt;',
+    to:"to Wardina", stamp:"09:14",
+    body:`<p>Hi Wardina,</p>
+          <p>Your mailbox has reached <span class="tap">98% of its quota</span>. Please archive older items so incoming mail isn&rsquo;t rejected.</p>
+          <p class="sig"><span class="tap">Regards,<br>Service Desk</span></p>`,
+    hint:"Read everything after the @ sign. Slowly.",
+    tag:"LOOKALIKE DOMAIN",
+    lesson:"Our real helpdesk sends from <b>@dentsu.com</b>. Anything with an extra word welded on &mdash; <b>-helpdesk</b>, <b>-support</b>, <b>-secure</b> &mdash; belongs to someone else. It only reads like us."
+  },
+  {
+    subject:"Action needed on your account",
+    name:"Microsoft 365", initials:"M",
+    addr:'&lt;<span class="tap">no-reply@microsoft.com</span>&gt;',
+    to:"to Undisclosed recipients", stamp:"02:41",
+    body:`<p><span class="tap">Dear User,</span></p>
+          <p><span class="tap" data-flag="1">Your account will be permanently deleted within 24 hours unless you verify immediately.</span></p>
+          <p>Disregard this notice if verification is already complete.</p>`,
+    hint:"Which sentence is trying to stop you thinking?",
+    tag:"MANUFACTURED URGENCY",
+    lesson:"Real providers give you weeks and never open with a countdown. The panic <b>is</b> the attack &mdash; it exists so you click before you check."
+  },
+  {
+    subject:"Your password expires today",
+    name:"dentsu Portal", initials:"dP",
+    addr:'&lt;<span class="tap">alerts@dentsu.com</span>&gt;',
+    to:"to Wardina", stamp:"11:03",
+    body:`<p>Reset your password here:</p>
+          <p><span class="tap link">portal.dentsu.com/reset</span><br>
+          <span class="urlbar tap" data-flag="1">dentsu-portal.verify-now.ru/login</span></p>
+          <p class="sig">Automated message &mdash; do not reply.</p>`,
+    hint:"The words and the destination disagree.",
+    tag:"MISMATCHED LINK",
+    lesson:"Link text is only text &mdash; anyone can type anything there. Hover on desktop, long-press on mobile, and read the <b>real</b> address first."
+  },
+  {
+    subject:"Action required: device verification failed",
+    name:"IT Service Desk", initials:"SD",
+    addr:'&lt;<span class="tap">servicedesk@dentsu.com</span>&gt;',
+    to:"to Wardina", stamp:"10:41",
+    body:`<p>Hi Wardina,</p>
+          <p><span class="tap">Your device failed this morning&rsquo;s routine verification check.</span> To restore access, complete the steps below:</p>
+          <p><span class="tap" data-flag="1">1. Press <b>Windows + R</b><br>2. Press <b>Ctrl + V</b>, then Enter</span><br>
+          <span class="urlbar tap">verification token already copied to your clipboard</span></p>
+          <p class="sig"><span class="tap">This takes about ten seconds. No IT visit needed.</span></p>`,
+    hint:"What is it asking you to do with your own keyboard?",
+    tag:"CLICKFIX &mdash; PASTE AND RUN",
+    lesson:"Nothing legitimate ever asks you to open Run and paste a command. There is no attachment to scan and no download to block, because <b>you</b> are the delivery mechanism. This is now the single most common way attackers get in &mdash; and no real IT team, and no real CAPTCHA, will ever ask it of you."
+  },
+  {
+    subject:"Quick favour",
+    name:"Daniel Reyes (CISO)", initials:"DR",
+    addr:'&lt;<span class="tap">daniel.reyes@dentsu.com</span>&gt;<br>reply-to: <span class="tap" data-flag="1">daniel.reyes.ciso@gmail.com</span>',
+    to:"to Wardina", stamp:"13:27",
+    body:`<p>In meetings all afternoon &mdash; are you at your desk?</p>
+          <p><span class="tap">Need you to sort something out for me, will explain shortly.</span></p>
+          <p class="sig">Sent from my iPhone</p>`,
+    hint:"Where would your reply actually land?",
+    tag:"REPLY-TO SPOOF",
+    lesson:"The From line can look flawless while <b>Reply-To</b> quietly points somewhere else. Your answer goes to the attacker, not to your CISO."
+  },
+  {
+    subject:"Annual account verification",
+    name:"Security Team", initials:"ST",
+    addr:'&lt;<span class="tap">security@dentsu.com</span>&gt;',
+    to:"to Wardina", stamp:"08:05",
+    body:`<p>As part of our annual access review, <span class="tap" data-flag="1">please reply with your username and current password</span> so we can confirm your account.</p>
+          <p><span class="tap">This takes about two minutes.</span></p>`,
+    hint:"What are they actually asking you to hand over?",
+    tag:"CREDENTIAL REQUEST",
+    lesson:"No IT team anywhere asks for your password &mdash; not by mail, not by phone, not ever. The ask itself is the flag, however right the sender looks."
+  }
+];
+
+/* ================= state ================= */
+const $ = id => document.getElementById(id);
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let i=0, found=0, solved=false, done=false, started=false;
+let outroTimer=null;
+let pose="stand", poking=false, backLine="", backPose="stand", stepper=null;
+const caught = new Array(MAILS.length).fill(false);
+
+function setSpeech(html,name){
+  $("line").innerHTML=html;
+  if(name){ pose=name; $("det").innerHTML=sprite(name); }
+}
+function say(html,name){
+  if(poking){ backLine=html; if(name) backPose=name; return; }
+  setSpeech(html,name);
+}
+function scoreboard(){
+  $("score").innerHTML="CAUGHT <b>"+String(found).padStart(2,"0")+"</b> / "+String(MAILS.length).padStart(2,"0");
+}
+
+/* ---------- walking ---------- */
+function detW(){ return $("det").offsetWidth || 74; }
+function tailTo(px){
+  $("tail").style.left = Math.max(16, Math.min(px + detW()/2 - 6, $("inner").clientWidth - 40)) + "px";
+}
+function home(){ $("det").style.transform="translateX(0px)"; tailTo(0); }
+
+function walkTo(x, then){
+  const d=$("det"), w=detW();
+  const px=Math.max(0, Math.min(x - w/2, $("inner").clientWidth - 36 - w));
+  const cur=parseFloat((d.style.transform.match(/-?[\d.]+/)||[0])[0]);
+  tailTo(px);
+  if(reduce || Math.abs(px-cur)<4){ d.style.transform=`translateX(${px}px)`; then&&then(); return; }
+
+  /* dino-style: no easing. he steps. */
+  const frames=Math.max(6, Math.round(Math.abs(px-cur)/16));
+  let n=0;
+  clearInterval(stepper);
+  stepper=setInterval(()=>{
+    n++;
+    const t=n/frames;
+    d.style.transform=`translateX(${cur+(px-cur)*t}px)`;
+    if(!poking) setSpeech($("line").innerHTML, n%2 ? "walk1" : "walk2");
+    if(n>=frames){
+      clearInterval(stepper); stepper=null;
+      if(!poking) setSpeech($("line").innerHTML,"stand");
+      then&&then();
+    }
+  }, 70);
+}
+
+/* ---------- poke ---------- */
+const OUCH=["<b>AUCH!</b>","<b>OW.</b> That&rsquo;s my hat.","<b>AUCH!</b> Poke the mail, not me.","<b>OI!</b> I&rsquo;m working here."];
+function poke(){
+  if(poking) return;
+  poking=true;
+  backLine=$("line").innerHTML; backPose=pose==="walk1"||pose==="walk2"?"stand":pose;
+  setSpeech(OUCH[Math.floor(Math.random()*OUCH.length)],"ouch");
+  const d=$("det");
+  d.classList.remove("ouch"); void d.offsetWidth;
+  if(!reduce) d.classList.add("ouch");
+  setTimeout(()=>{ d.classList.remove("ouch"); poking=false; setSpeech(backLine,backPose); }, reduce?800:1100);
+}
+
+/* ================= briefing ================= */
+const BRIEF=[
+  "Six messages landed in this inbox overnight.",
+  "Every one of them is lying about something.",
+  "I can&rsquo;t tell which part. <b>That is where you come in.</b>"
+];
+let typing=false, typed=false;
+function skipTyping(){
+  if(typed) return;
+  typing=false; typed=true;
+  BRIEF.forEach((t,n)=>$("bl"+n).innerHTML=t);
+}
+function typeBrief(){
+  typing=true;
+  let li=0;
+  const step=()=>{
+    if(li>=BRIEF.length){ typing=false; typed=true; return; }
+    const el=$("bl"+li), src=BRIEF[li];
+    let k=0;
+    const tick=()=>{
+      if(!typing) return;
+      if(k>=src.length){ el.innerHTML=src; li++; setTimeout(step,320); return; }
+      if(src[k]==="<"||src[k]==="&"){
+        const end=src.indexOf(src[k]==="<"?">":";",k);
+        k = end===-1 ? k+1 : end+1;
+      } else k++;
+      el.innerHTML=src.slice(0,k)+'<span class="caret">_</span>';
+      setTimeout(tick,22);
+    };
+    tick();
+  };
+  step();
+}
+
+/* ================= game ================= */
+function controls(html){ $("controls").innerHTML=html; }
+
+function render(){
+  const m=MAILS[i];
+  solved=false; done=false; poking=false;
+  clearInterval(outroTimer); outroTimer=null;
+  scoreboard();
+  $("lesson").classList.add("hidden");
+  $("mail").classList.remove("locked");
+  $("mail").innerHTML=`
+    <div class="bar"><span>&#8249;</span><span>Inbox</span><span class="sp"></span><span class="ic">&#8617; &#9633; &#8942;</span></div>
+    <div class="subject">${m.subject}</div>
+    <div class="sender">
+      <div class="av">${m.initials}</div>
+      <div class="who"><div class="nm">${m.name}</div><div class="addr">${m.addr}</div><div class="meta">${m.to}</div></div>
+      <div class="stamp">${m.stamp}</div>
+    </div>
+    <div class="body">${m.body}</div>`;
+
+  $("mail").querySelectorAll(".tap").forEach(el=>{
+    el.tabIndex=0; el.setAttribute("role","button");
+    el.addEventListener("click",()=>pick(el));
+    el.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(el); } });
+  });
+
+  controls('<button class="ctl" id="btnHint">HINT</button><button class="ctl go" id="btnNext">NEXT</button>');
+  $("btnHint").addEventListener("click",()=>{ if(!solved) say(MAILS[i].hint,"stand"); });
+  $("btnNext").addEventListener("click",next);
+
+  home();
+  ask();
+}
+
+function ask(){
+  if(solved) return;
+  say('Something in here is lying to me. <b>I cannot tell what.</b><span class="caret">_</span>',"stand");
+}
+
+const SHRUGS=["Hmm. That part checks out.","No &mdash; I looked at that already.","That one is fine. Keep going.","Warm. But not quite."];
+
+function pick(el){
+  if(solved) return;
+
+  if(el.dataset.flag==="1"){
+    solved=true; found++; caught[i]=true;
+    scoreboard();
+    el.classList.add("hit");
+    $("mail").classList.add("locked");
+
+    const box=el.getBoundingClientRect(), pane=$("inner").getBoundingClientRect();
+    walkTo(box.left + box.width/2 - pane.left, ()=>{
+      say("<b>THERE IT IS.</b> I walked past that five times.","found");
+    });
+
+    const m=MAILS[i];
+    $("lesson").innerHTML=`<span class="tag">${m.tag}</span><span class="txt">${m.lesson}</span>`;
+    $("lesson").classList.remove("hidden");
+    $("btnNext").textContent = (i===MAILS.length-1) ? "RECAP" : "NEXT";
+
+  } else {
+    el.classList.add("no");
+    setTimeout(()=>el.classList.remove("no"),480);
+    say(SHRUGS[Math.floor(Math.random()*SHRUGS.length)],"stand");
+    setTimeout(()=>{ if(!solved) ask(); },1700);
+  }
+}
+
+function next(){ if(i<MAILS.length-1){ i++; render(); } else finish(); }
+function restart(){ i=0; found=0; caught.fill(false); render(); }
+
+function finish(){
+  done=true; solved=true;
+  $("lesson").classList.add("hidden");
+  $("mail").classList.add("locked");
+  $("mail").innerHTML=`<div class="body"><div class="recap">
+    <h2>SIX THINGS TO CHECK</h2>
+    <p class="sub">before you click anything</p>
+    <ol>
+      <li>Read what comes after the @, not the display name</li>
+      <li>A countdown is there to stop you thinking</li>
+      <li>Link text lies &mdash; check where it really goes</li>
+      <li>No genuine fix asks you to paste a command</li>
+      <li>Check Reply-To, not just From</li>
+      <li>Nobody legitimate ever asks for your password</li>
+    </ol></div></div>`;
+  $("mail").style.fontFamily="var(--px)";
+  controls('<button class="ctl go" id="btnAgain">RUN IT AGAIN</button>');
+  $("btnAgain").addEventListener("click",()=>{ $("mail").style.fontFamily=""; restart(); });
+  home();
+  clearInterval(outroTimer); outroTimer=null;
+  say((found===MAILS.length ? "<b>All six.</b> " : `<b>${found} of ${MAILS.length}.</b> `)
+      + "Nice work! Reporting is what really matters.","found");
+}
+
+/* ================= start ================= */
+function start(){
+  if(started) return;
+  started=true;
+  skipTyping();
+  $("brief").classList.add("hidden");
+  $("mailHost").classList.remove("hidden");
+  render();
+}
+
+$("det").innerHTML=sprite("stand");
+$("det").setAttribute("role","button");
+$("det").setAttribute("aria-label","Poke the detective");
+$("det").tabIndex=0;
+$("det").addEventListener("click",poke);
+$("det").addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); poke(); } });
+
+setSpeech("Morning. Grab a coffee, this will not take long.","stand");
+controls('<button class="ctl go" id="btnStart">OPEN THE INBOX</button><span class="note">6 MESSAGES &nbsp;/&nbsp; 3 MINUTES</span>');
+$("btnStart").addEventListener("click",start);
+scoreboard();
+setTimeout(()=>{ reduce ? skipTyping() : typeBrief(); }, reduce?0:600);
+
+addEventListener("keydown",e=>{
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
+  const t=e.target;
+  if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.isContentEditable)) return;
+  const k=e.key.toLowerCase();
+  if(!started && (k==="n"||e.key===" ")){ e.preventDefault(); start(); return; }
+  if(!started) return;
+  if(k==="n"){ e.preventDefault(); done ? restart() : next(); }
+  if(k==="h"&&!solved){ e.preventDefault(); say(MAILS[i].hint,"stand"); }
+});
+
+let rz;
+addEventListener("resize",()=>{
+  clearTimeout(rz);
+  rz=setTimeout(()=>{
+    if(!started||!solved||done) return home();
+    const hit=$("mail").querySelector(".tap.hit");
+    if(!hit) return;
+    const box=hit.getBoundingClientRect(), pane=$("inner").getBoundingClientRect();
+    const w=detW();
+    const px=Math.max(0,Math.min(box.left+box.width/2-pane.left-w/2,$("inner").clientWidth-36-w));
+    $("det").style.transform=`translateX(${px}px)`;
+    tailTo(px);
+  },140);
+});
+</script>
+</body>
+</html>
