@@ -233,8 +233,8 @@
 /* ================= art =================
    All sprites are PNGs in assets/sprites/, drawn 1 file-pixel per art pixel and scaled up
    with smoothing off. Greys only: #1A1A1A, #535353, #A8A8A8, #D9D9D9, white. */
-const META={"kak":{"stand":{"w":44,"h":98,"foot":22,"head":23},"run1":{"w":79,"h":100,"foot":33,"head":53},"run2":{"w":79,"h":100,"foot":33,"head":53},"shoot":{"w":109,"h":102,"foot":34,"head":42,"muzzle":[100,28]},"trip":{"w":84,"h":83,"foot":35,"head":53},"sword":{"w":70,"h":91,"foot":19,"head":20,"hand":[43,43]}}};
-const SPRITES=["kak-stand","kak-run1","kak-run2","kak-shoot","kak-trip","kak-sword",
+const META={"kak":{"stand":{"w":44,"h":98,"foot":22,"head":23},"run1":{"w":88,"h":105,"foot":37,"head":57},"run2":{"w":88,"h":105,"foot":37,"head":57},"shoot":{"w":109,"h":102,"foot":34,"head":42,"muzzle":[100,28]},"trip":{"w":84,"h":83,"foot":35,"head":53},"sword":{"w":70,"h":91,"foot":19,"head":20,"hand":[43,43]},"run3":{"w":88,"h":105,"foot":37,"head":57}}};
+const SPRITES=["kak-stand","kak-run1","kak-run2","kak-run3","kak-shoot","kak-trip","kak-sword",
   "slime-1","slime-2","goblin-1","goblin-2","imp-1","imp-2",
   "boss-mimic","boss-fireimp","boss-shifter","boss-kobold","boss-ogre","boss-dragon"];
 const IMG={};
@@ -390,6 +390,19 @@ const SFX={
   whoosh(){ noise({f0:280,peak:3200,f1:500,dur:0.55,vol:0.11,q:1.4,attack:0.12}); },
   smash(){ noise({filter:"lowpass",f0:2400,f1:200,dur:0.45,vol:0.09}); tone({type:"sine",f0:110,f1:40,dur:0.35,vol:0.16}); },
   win(){ [523,659,784,1047].forEach((f,k)=>tone({type:"square",f0:f,dur:k===3?0.24:0.09,vol:0.028,delay:k*0.09})); },
+  /* poke: a springy cartoon boing, ~0.35 s; pitch varies a little each time */
+  boing(){
+    const a=audio(); if(!a) return;
+    const t=a.currentTime, d=0.36, f=300*(0.88+Math.random()*0.24);
+    const o=a.createOscillator(), g=a.createGain(), lfo=a.createOscillator(), lg=a.createGain();
+    o.type="triangle";
+    o.frequency.setValueAtTime(f*0.8,t); o.frequency.exponentialRampToValueAtTime(f*1.25,t+0.05); o.frequency.exponentialRampToValueAtTime(f,t+d);
+    lfo.type="sine"; lfo.frequency.setValueAtTime(15,t); lfo.frequency.linearRampToValueAtTime(9,t+d);   /* the wobble */
+    lg.gain.setValueAtTime(f*0.35,t); lg.gain.exponentialRampToValueAtTime(f*0.02,t+d);
+    lfo.connect(lg); lg.connect(o.frequency);
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.045,t+0.012); g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    o.connect(g); g.connect(master); o.start(t); lfo.start(t); o.stop(t+d+0.03); lfo.stop(t+d+0.03);
+  },
   sad(){ [392,370,349,330].forEach((f,k)=>tone({type:"triangle",f0:f,f1:k===3?247:f,dur:k===3?0.7:0.28,vol:0.05,delay:k*0.3})); }
 };
 function sndButton(){
@@ -505,9 +518,10 @@ function scoreboard(){
 /* ================= Kak Timah ================= */
 /* trip, ~0.8 s: lurch with "!", stumble (tripping drawing), land with a dust puff, pop back up */
 const TRIP=[0.15,0.45,0.68], TRIP_MS=800;
+const RUN_CYCLE=["run1","run2","run3","run2"], RUN_FPS=9;   /* 3-frame run, played 1-2-3-2 */
 function pose(name,t){
   switch(name){
-    case "run":   { const f=Math.floor(t)%2; return {key:f?"run2":"run1", dy:f?-1.5:0}; }
+    case "run":   return {key:RUN_CYCLE[Math.floor(t)%4]};
     case "shoot": return {key:"shoot"};
     case "slash": return {key:"sword"};
     case "victory": { const h=Math.sin(Math.PI*Math.min(1,t)); return {key:"stand", dy:-h*10, sx:1-h*0.03, sy:1+h*0.04}; }
@@ -751,7 +765,7 @@ function update(dt, now){
   else if(scene==="finale"){ pose=fin.pose; pt=pose==="victory"?hop:0; }
   else if(scene==="chase"){
     if(reduce || now<shootUntil) pose="shoot";
-    else { pose="run"; pt=runT/140; }
+    else { pose="run"; pt=runT*RUN_FPS/1000; }
   }
   else if(scene==="won"||scene==="done"){ pose="victory"; pt=hop; }
   kak.pose=pose; kak.pt=pt;
@@ -807,6 +821,7 @@ function poke(){
   lastOuch=n;
   setLine(OUCH[n]);
   kak.ouchAt=performance.now();
+  SFX.boing();
   setTimeout(()=>{ poking=false; setLine(backLine); }, reduce?900:1100);
 }
 
