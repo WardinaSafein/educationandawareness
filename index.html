@@ -478,9 +478,10 @@ function pick(el){
     $("mail").classList.add("locked");
 
     const box=el.getBoundingClientRect(), pane=$("inner").getBoundingClientRect();
-    walkTo(box.left + box.width/2 - pane.left, ()=>{
-      say("<b>THERE IT IS.</b> I walked past that five times.","found");
-    });
+    /* speak straight away so the old prompt isn't left up during the walk */
+    const gotIt="<b>THERE IT IS.</b> I walked past that five times.";
+    say(gotIt);
+    walkTo(box.left + box.width/2 - pane.left, ()=>{ say(gotIt,"found"); });
 
     const m=MAILS[i];
     $("lesson").innerHTML=`<span class="tag">${m.tag}</span><span class="txt">${m.lesson}</span>`;
