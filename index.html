@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Spot It — Inbox Edition</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%23535353' d='M5 1h4v1h1v1h1v4h-1v1h-1v1H5V8H4V7H3V3h1V2h1zm0 2v4h4V3z'/%3E%3Cpath fill='%23535353' d='M10 9h2v1h1v1h1v1h1v2h-2v-1h-1v-1h-1v-1h-1z'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -348,7 +349,12 @@ function detW(){ return $("det").offsetWidth || 74; }
 function tailTo(px){
   $("tail").style.left = Math.max(16, Math.min(px + detW()/2 - 6, $("inner").clientWidth - 40)) + "px";
 }
-function home(){ $("det").style.transform="translateX(0px)"; tailTo(0); }
+function home(){
+  /* stop any walk still in progress, and its pending line, before resetting */
+  clearInterval(stepper); stepper=null;
+  if(!poking && (pose==="walk1"||pose==="walk2")) setSpeech($("line").innerHTML,"stand");
+  $("det").style.transform="translateX(0px)"; tailTo(0);
+}
 
 function walkTo(x, then){
   const d=$("det"), w=detW();
