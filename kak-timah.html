@@ -24,25 +24,26 @@
   body{
     background:var(--paper);color:var(--ink);
     font-family:var(--px);
-    padding:26px 0 40px;min-height:100vh;
+    padding:24px 0 40px;min-height:100vh;
     display:flex;flex-direction:column;overflow-x:hidden;
   }
   .wrap{width:100%;max-width:900px;margin:0 auto;padding:0 18px}
 
-  /* ---------- hud ---------- */
+  /* ---------- header: one centred column, as wide as the email box ---------- */
   .hud{
-    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;
-    font-size:11px;letter-spacing:.16em;color:var(--ink);
+    width:100%;max-width:676px;margin:0 auto;padding:0 18px;
+    display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;
   }
-  .hud .title{line-height:1.7}
+  .hud .title{font-size:11px;letter-spacing:.16em;line-height:1.8;color:var(--ink)}
   .hud .nw{white-space:nowrap}
-  .hud .right{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-  .hud .sc{color:var(--mid);font-size:10px;letter-spacing:.2em;flex:none}
+  .hud .stats{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+  .hud .sc{color:var(--mid);font-size:10px;letter-spacing:.2em}
   .hud .sc b{color:var(--ink);font-weight:400}
   .hearts{display:inline-flex;gap:5px}
-  .hearts svg{display:block;width:21px;height:18px}
-  .hearts .lost{animation:heartlost .2s steps(1) 6}
-  @keyframes heartlost{50%{opacity:0}}
+  .heart{position:relative;display:block;width:21px;height:21px}
+  .heart svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .heart .full{transition:opacity .7s ease}
+  .heart.gone .full{opacity:0}
   .snd{
     font-family:var(--px);font-size:9px;letter-spacing:.1em;cursor:pointer;
     display:inline-flex;align-items:center;gap:7px;padding:6px 8px;
@@ -55,15 +56,14 @@
   /* ---------- game area (shakes as one) ---------- */
   #game{flex:1;display:flex;flex-direction:column}
   #game.shake{animation:shake .3s steps(6)}
-  #game.quake{animation:quake .45s steps(9)}
+  #game.quake{animation:quake .4s steps(8)}
   @keyframes shake{0%,100%{translate:0 0}20%{translate:-3px 1px}40%{translate:3px -1px}60%{translate:-2px 0}80%{translate:2px 1px}}
-  @keyframes quake{0%,100%{translate:0 0}12%{translate:-6px 2px}25%{translate:6px -2px}37%{translate:-5px -1px}50%{translate:5px 2px}62%{translate:-3px 0}75%{translate:3px 1px}87%{translate:-1px 0}}
+  @keyframes quake{0%,100%{translate:0 0}15%{translate:-5px 2px}30%{translate:5px -2px}45%{translate:-4px -1px}60%{translate:4px 2px}80%{translate:-2px 0}}
 
-  /* ---------- stage ---------- */
-  .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:26px 0 4px}
+  .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:22px 0 4px}
   .stage > *{width:100%}
 
-  /* ---------- the email: the only real object here ---------- */
+  /* ---------- the email ---------- */
   .client{
     max-width:640px;margin:0 auto;background:var(--paper);
     border:1px solid #DADCE0;border-radius:8px;overflow:hidden;
@@ -96,23 +96,18 @@
     display:inline-block;margin-top:4px;background:#F1F3F4;border:1px solid #E0E3E7;
     border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:12px;color:#5F6368;
   }
-
-  /* ---------- clickable evidence ---------- */
   .tap{cursor:pointer;border-bottom:2px dotted #9AA0A6;border-radius:0}
   .tap:hover,.tap:focus-visible{background:#F1F3F4;outline:none}
   .tap:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
   .tap.no{animation:wrong .24s steps(2) 2}
   @keyframes wrong{0%{translate:0}50%{translate:5px}100%{translate:0}}
-  .tap.hit{
-    background:var(--ink);color:#fff;border-bottom-color:var(--ink);
-    padding:1px 4px;
-  }
+  .tap.hit{background:var(--ink);color:#fff;border-bottom-color:var(--ink);padding:1px 4px}
   .tap.hit .urlbar,.tap.hit.urlbar{background:transparent;border-color:#8A8A8A;color:#fff}
   .locked .tap{cursor:default;border-bottom-color:transparent}
   .locked .tap:hover{background:transparent}
   .locked .tap.hit{background:var(--ink)}
 
-  /* ---------- briefing (intro) ---------- */
+  /* ---------- intro box ---------- */
   .bubble{
     position:relative;max-width:640px;margin:0 auto;
     border:3px solid var(--ink);background:var(--paper);
@@ -125,10 +120,8 @@
   @keyframes blink{50%{opacity:0}}
 
   /* ---------- the world strip ---------- */
-  .world{position:relative;height:244px;margin-top:8px}
+  .world{position:relative;height:262px;margin-top:8px}
   #cv{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
-
-  /* speech bubble: as wide as its words, parked above her head */
   .talk{
     position:absolute;left:0;top:0;z-index:2;
     width:max-content;max-width:min(340px,calc(100% - 16px));
@@ -145,10 +138,17 @@
     z-index:-1;clip-path:polygon(0 0,100% 0,50% 100%);
   }
   .talk b{font-weight:400;text-shadow:1px 0 0 currentColor;letter-spacing:.04em}
-
-  /* invisible hit area that follows her, so she can be poked by mouse or keyboard */
   .det{position:absolute;left:0;top:0;z-index:1;cursor:pointer}
   .det:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+  /* "MIMIC DEFEATED: Lookalike domain" */
+  .banner{
+    position:absolute;left:0;top:0;z-index:3;white-space:nowrap;
+    border:3px solid #1A1A1A;background:var(--paper);color:#1A1A1A;
+    font-size:10px;letter-spacing:.06em;padding:9px 12px;
+    opacity:0;transition:opacity .25s;pointer-events:none;
+  }
+  .banner.show{opacity:1}
+  .banner b{font-weight:400;text-shadow:1px 0 0 currentColor}
 
   /* ---------- below the line ---------- */
   .below{margin-top:16px}
@@ -157,7 +157,6 @@
   .lesson .txt{font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#3D3D3D}
   .lesson .txt b{font-weight:700;color:#2B2B2B}
   .hidden{display:none}
-
   .controls{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
   .ctl{
     font-family:var(--px);font-size:10px;letter-spacing:.12em;
@@ -171,25 +170,25 @@
   .ctl:disabled,.ctl:disabled:hover{background:var(--hair);border-color:var(--mid);color:var(--mid);cursor:not-allowed}
   .note{font-size:9px;letter-spacing:.18em;color:var(--mid);align-self:center}
 
-  /* ---------- recap / rest ---------- */
   .recap h2{font-size:13px;letter-spacing:.1em;margin:0 0 6px;color:var(--ink);line-height:1.6}
   .recap .sub{font-family:var(--mono);font-size:13px;color:var(--mid);margin:0 0 16px}
+  .recap .sub b{color:var(--ink)}
   .recap ol{margin:0;padding:0;list-style:none;counter-reset:r}
   .recap li{
     counter-increment:r;display:flex;gap:14px;padding:11px 0;border-top:1px solid var(--hair);
     font-family:var(--mono);font-size:13.5px;color:#3D3D3D;line-height:1.5;
   }
   .recap li::before{content:counter(r,decimal-leading-zero);font-family:var(--px);font-size:9px;color:var(--mid);flex:none;padding-top:3px}
-
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
   @media (min-width:760px){
-    body{padding:34px 0 56px}
-    .hud{font-size:13px}
+    body{padding:32px 0 56px}
+    .hud .title{font-size:13px}
     .hud .sc{font-size:11px}
     .bubble{font-size:12px;padding:22px 24px;line-height:2.15}
     .talk{font-size:11px;padding:11px 14px}
-    .world{height:264px}
+    .banner{font-size:12px}
+    .world{height:300px}
     .recap ol{display:grid;grid-template-columns:1fr 1fr;column-gap:30px}
   }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -197,31 +196,30 @@
 </head>
 <body>
 
-<div class="wrap hud">
-  <span class="title"><span class="nw">SPOT AND REPORT</span> <span class="nw">WITH KAK TIMAH</span></span>
-  <span class="right">
+<header class="hud">
+  <div class="title"><span class="nw">SPOT AND REPORT</span> <span class="nw">WITH KAK TIMAH</span></div>
+  <div class="stats">
     <span class="hearts" id="hearts" role="img"></span>
     <span class="sc" id="score">CAUGHT <b>00</b> / 06</span>
     <button class="snd" id="snd" type="button" aria-pressed="false"></button>
-  </span>
-</div>
+  </div>
+</header>
 
 <div id="game">
   <div class="stage">
     <div>
       <div id="brief">
-        <div class="bubble">
-          <p id="bl0"></p><p id="bl1"></p><p id="bl2"></p><p id="bl3"></p>
-        </div>
+        <div class="bubble"><p id="bl0"></p><p id="bl1"></p><p id="bl2"></p></div>
       </div>
       <div id="mailHost" class="hidden"><div class="client" id="mail"></div></div>
     </div>
   </div>
 
   <div class="world" id="world">
-    <canvas id="cv" role="img" aria-label="Kak Timah, a cartoon woman in a hijab, big round glasses and a long baju kurung, standing ready with her blaster"></canvas>
+    <canvas id="cv" role="img" aria-label="Kak Timah, a woman in a hijab, big round glasses and a long baju kurung, standing ready"></canvas>
     <div class="talk hidden" id="talk"><span id="line"></span><i class="tail" id="tail"></i></div>
     <div class="det" id="det" role="button" tabindex="0" aria-label="Poke Kak Timah"></div>
+    <div class="banner" id="banner" aria-hidden="true"></div>
   </div>
 </div>
 
@@ -232,566 +230,18 @@
 <div class="sr" id="sr" aria-live="polite"></div>
 
 <script>
-/* ================= art ================= */
-/* Pixel grids, one char per pixel: k black, d #535353, m #7E7E7E, l #A8A8A8, s #D9D9D9, w white, "." paper.
-   Kak Timah is one sprite; her poses are animation (lean, bounce, tip, hop, squash) plus weapons at her hand. */
-/* Kak Timah poses = one base sprite + animation (transforms), plus solid pixel weapons at her hand. */
-const PAL = { k: "#1A1A1A", d: "#535353", m: "#7E7E7E", l: "#A8A8A8", s: "#D9D9D9", w: "#FFFFFF" };
-
-function bake(rows) {
-  const c = document.createElement("canvas"), x = c.getContext("2d");
-  c.width = rows[0].length; c.height = rows.length; c.rows = rows;
-  rows.forEach((r, y) => { for (let i = 0; i < r.length; i++) { const col = PAL[r[i]]; if (col) { x.fillStyle = col; x.fillRect(i, y, 1, 1); } } });
-  return c;
-}
-
-/* solid pixel weapons (filled, black outline) */
-const BLASTER = [
-  "..kkkkkkkkkkk..",
-  ".kmmmmmmmmmmmkk",
-  "kmllllllllllmmk",
-  "kmmmmmmmmmmmmkk",
-  ".kkkkdddkkkkk..",
-  "....kdddk......",
-  "....kdddk......",
-  "....kkkkk......",
-];
-const FLASH = [
-  "....k....",
-  "...kwk...",
-  "k.kwwwk.k",
-  ".kwwwwwk.",
-  "kwwwwwwwk",
-  ".kwwwwwk.",
-  "k.kwwwk.k",
-  "...kwk...",
-  "....k....",
-];
-function swordRows() {
-  // grip | guard | blade with a pointed tip; drawn pointing right
-  const W = 30, H = 9, g = Array.from({ length: H }, () => Array(W).fill("."));
-  const put = (x, y, c) => { if (x >= 0 && y >= 0 && x < W && y < H) g[y][x] = c; };
-  for (let x = 0; x <= 5; x++) for (let y = 3; y <= 5; y++) put(x, y, (y === 3 || y === 5 || x === 0) ? "k" : "d"); // grip
-  for (let y = 0; y <= 8; y++) for (let x = 6; x <= 8; x++) put(x, y, (x === 6 || x === 8 || y === 0 || y === 8) ? "k" : "m"); // guard
-  for (let x = 9; x <= 25; x++) for (let y = 2; y <= 6; y++) put(x, y, (y === 2 || y === 6) ? "k" : (y === 3 ? "w" : y === 4 ? "w" : "l")); // blade
-  const tip = [[26, 3, "w"], [26, 4, "w"], [26, 5, "l"], [26, 2, "k"], [26, 6, "k"], [27, 3, "k"], [27, 4, "w"], [27, 5, "k"], [28, 4, "k"]];
-  tip.forEach(([x, y, c]) => put(x, y, c));
-  put(29, 4, ".");
-  return g.map(r => r.join(""));
-}
-const SWORD = swordRows();
-
-/* pose table: transform of the body + what is in her hand.
-   lean: radians forward (clockwise); pivot "feet" = bottom centre, "toe" = front foot */
-function poseSpec(name, t) {
-  const TAU = Math.PI * 2;
-  switch (name) {
-    case "run": {        // bouncy step with a forward lean; t = cycle 0..1
-      const b = Math.abs(Math.sin(t * TAU));
-      return { lean: 0.13, dy: -b * 5, sx: 1 + (1 - b) * 0.05, sy: 1 - (1 - b) * 0.05, hold: "blaster" };
-    }
-    case "shoot": return { lean: 0.1, dy: -2, sx: 0.97, sy: 1.03, hold: "blaster", flash: true, kick: -2 };
-    case "trip": {       // tip forward and fall; t 0..1
-      const k = Math.min(1, t);
-      return { lean: 1.48 * k * k, pivot: "toe", dy: -8 * Math.sin(Math.PI * Math.min(1, k * 1.2)), hold: null, dust: k > 0.85 };
-    }
-    case "slash": return { lean: 0.22, dy: 0, sx: 1.04, sy: 0.97, hold: "sword", swordAngle: 0.35, arc: true };
-    case "draw":  return { lean: -0.05, dy: 0, hold: "sword", swordAngle: -1.25 };
-    case "victory": {    // hop
-      const h = Math.sin(Math.PI * Math.min(1, t));
-      return { lean: -0.06, dy: -h * 16, sx: 1 - h * 0.04, sy: 1 + h * 0.06, hold: "sword", swordAngle: -1.45 };
-    }
-    case "ouch": {       // squash and wobble
-      const w = Math.sin(t * Math.PI * 6) * (1 - t);
-      return { lean: w * 0.18, dy: 0, sx: 1.16 - t * 0.16, sy: 0.84 + t * 0.16, hold: null };
-    }
-    default: return { lean: 0, dy: 0, hold: "blaster" };
-  }
-}
-
-/* Draw her with feet at (fx, fy) on the canvas, art scale S. */
-function drawKak(ctx, A, name, t, fx, fy, S, o) {
-  o = o || {};
-  const p = poseSpec(name, t);
-  const w = A.base.width * S, h = A.base.height * S;
-  const pivX = p.pivot === "toe" ? w * 0.28 : 0;           // front foot is right of centre
-  ctx.save();
-  ctx.translate(Math.round(fx + pivX), Math.round(fy + (p.dy || 0)));
-  ctx.rotate(p.lean || 0);
-  ctx.scale(p.sx || 1, p.sy || 1);
-  ctx.translate(-pivX, 0);
-  ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(A.base, Math.round(-w / 2), Math.round(-h), w, h);
-  // hand anchor in sprite pixels -> local coords
-  const hx = -w / 2 + A.hand[0] * S, hy = -h + A.hand[1] * S;
-  if (p.hold === "blaster") {
-    const bx = hx - 3 * S + (p.kick || 0) * S, by = hy - 4 * S;
-    ctx.drawImage(A.blaster, Math.round(bx), Math.round(by), A.blaster.width * S, A.blaster.height * S);
-    if (p.flash) ctx.drawImage(A.flash, Math.round(bx + 14 * S), Math.round(by - 2 * S), A.flash.width * S, A.flash.height * S);
-  }
-  if (p.hold === "sword") {
-    ctx.save();
-    ctx.translate(hx, hy);
-    ctx.rotate(p.swordAngle || 0);
-    ctx.drawImage(A.sword, Math.round(-3 * S), Math.round(-4.5 * S), A.sword.width * S, A.sword.height * S);
-    ctx.restore();
-    const arc = o.arc != null ? o.arc : (p.arc ? 1 : 0);
-    if (arc > 0) slashArc(ctx, hx, hy, S, arc);
-  }
-  ctx.restore();
-  if (p.dust && !o.noDust) { dustPuff(ctx, fx + pivX + h * 0.9, fy, S, 1); dustPuff(ctx, fx + pivX - w * 0.2, fy, S, 0.8); }
-}
-
-/* big crescent slash in front of her; k = 0..1 fade */
-function slashArc(ctx, cx, cy, S, k) {
-  const R = 30 * S;
-  ctx.save();
-  ctx.globalAlpha = k;
-  ctx.lineCap = "butt";
-  const arcs = [[R, 9 * S, -1.6, 0.9], [R * 0.78, 4 * S, -1.3, 0.7], [R * 1.18, 2.5 * S, -1.2, 0.6]];
-  for (const [r, lw, a0, a1] of arcs) {
-    ctx.strokeStyle = PAL.k; ctx.lineWidth = lw + 2.5 * S; ctx.beginPath(); ctx.arc(cx, cy, r, a0, a1); ctx.stroke();
-    ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = lw; ctx.beginPath(); ctx.arc(cx, cy, r, a0 + 0.04, a1 - 0.04); ctx.stroke();
-  }
-  ctx.restore();
-}
-function dustPuff(ctx, x, y, S, k) {
-  /* chunky pixel puffs: light grey with a mid-grey rim, bottoms sitting on the ground */
-  const blobs = [[0, -4, 4], [-8, -3, 3], [8, -3, 3], [-4, -8, 2.5], [5, -8, 2], [-12, -2, 1.5], [12, -2, 1.5]];
-  ctx.save(); ctx.globalAlpha = k;
-  const px = (cx, cy, r, col) => {
-    ctx.fillStyle = col;
-    for (let yy = -Math.ceil(r); yy <= Math.ceil(r); yy++) for (let xx = -Math.ceil(r); xx <= Math.ceil(r); xx++)
-      if (xx * xx + yy * yy <= r * r) ctx.fillRect(Math.round(x + (cx + xx) * S), Math.round(y + (cy + yy) * S), Math.ceil(S), Math.ceil(S));
-  };
-  for (const [dx, dy, r] of blobs) px(dx, dy, r + 1, PAL.l);
-  for (const [dx, dy, r] of blobs) px(dx, dy, r, "#ECECEC");
-  ctx.restore();
-}
-const KAK={hand:[24.2, 29.3], rows:[
-  ".............kkkkkkk...........",
-  "..........kkklllllllkk.........",
-  ".........kllllllllllllk........",
-  "........kllllllllllllllk.......",
-  "........klllllllllllkklk.......",
-  ".......kllllllllllkkllklk......",
-  ".......kllllllllkksssskkk......",
-  ".......kllllllksssssssskk......",
-  "......kllllllkssssssssssk......",
-  "......klllllksssskkkkssskk.....",
-  "......klllllkssskwwwwkkwwk.....",
-  "......klllllsssskwwwwkkwwwk....",
-  ".....klllkkkkkkkkwwwwkkwwwk....",
-  ".....kllkllksssskwwwwkkwwwk....",
-  ".....kllkdkkssssskwwksskkk.....",
-  ".....kllkkkksssssskssskmk......",
-  "....kllllllksssssssssskksk.....",
-  "....klllllllsssssssksssskk.....",
-  "....klllllllksssskwwkssskk.....",
-  "....kllllllllksssssssssklk.....",
-  "...kllllllllllkkkkkkkkkllk.....",
-  "...klllllllllllllllklllllk.....",
-  "...kkllllllllllllllklllllkk....",
-  "..kddklllllllllllllkllllkdk....",
-  "..kdddkllllllllllllkkkkkdddk...",
-  ".kdddddklllllllllllkmmmkkkkmkk.",
-  ".kddddddklllkklllllkmmmmmmmmmk.",
-  "kdddddddddkllkkkllkmmmmmmmmmk..",
-  "kddddkdddddkllkkkkkmmmmmmkkkkk.",
-  "kddddkddddddkkkkskmmmmmmkkkskk.",
-  "kdddddkddddkkdksskmmmmmmmkkssk.",
-  "kddddddkkkdddddkkmmmmmmmmkkskdk",
-  "kdddddddddddddddkmmmmmmmmmkkkdk",
-  ".kddddddddddddddkmmmmmmmmmkdddk",
-  ".kdddddddddddddkmmmmmmmmmmkdddk",
-  "..kddddddddddkkkkkkkkkkkkkdddk.",
-  "...kkdddddddkdddddddddddddkkk..",
-  "..kddkkkkkkddddddddddddddk.....",
-  "..kdddddddddddddddddkddddk.....",
-  "..kddddddddddddddddkdddddk.....",
-  "..kddddddddddddddddkdddddk.....",
-  "..kdddddddddddddddkddddddk.....",
-  "..kddddddddddddddkdddddddk.....",
-  "..kdddddddddddddkdddddddddk....",
-  "..kddddddddddddkddddddddddk....",
-  "..kdddddddddddkdddddddddddk....",
-  "..kdddddddddkkddddddddddddk....",
-  "..kddddddddkddddddddddddddk....",
-  "..kdddddddkdddddddddddddddk....",
-  "..kdddddddddddddddddddddddk....",
-  "..kdddddddddddddddddddddddk....",
-  "..kdddddddddddddddddddddddk....",
-  "...kddddddddddddddddddddddk....",
-  "...kdkkkkkkkkkkkkkkkkkkkkk.....",
-  "...kdddddddddddddddddddddk.....",
-  "...kdddddddddddddddddddddk.....",
-  "...kdddddddddddddddddddddk.....",
-  "...kdddddddddddddddddddddk.....",
-  "...kdddddddddddddddddddddk.....",
-  "...kdddddddddddddddddddddk.....",
-  "...kdddddddddddddddddddddk.....",
-  "...kkkkkkkkkkkdddddddddddk.....",
-  "...kkkkkkkkkkkkkkkkkkkkkkk.....",
-  "............k..kkkkkkkkkk......"
-]};      /* 31x64 sprite traced from the reference drawing; hand = where weapons attach */
-const MON={minions:{
-  bug:[[
-  ".......k.....k....",
-  ".......k....k.....",
-  ".......kkkk.k.....",
-  "....kkkdkddkkk....",
-  "...kddddddddddk...",
-  "..kwwdwwddddmddk..",
-  "..kkwdkwdddddddk..",
-  ".kddddddddddddddk.",
-  "..kddddddddddddk..",
-  "..kwdwddddmddddk..",
-  "...kwdwdddddddk...",
-  "..kkkkkddddkkk....",
-  "..k....kkkk.......",
-  ".kk....kkkk......."
-],[
-  ".......k.....k....",
-  ".......k....k.....",
-  ".......kkkk.k.....",
-  "....kkkdkddkkk....",
-  "...kddddddddddk...",
-  "..kwwdwwddddmddk..",
-  "..kkwdkwdddddddk..",
-  ".kddddddddddddddk.",
-  "..kddddddddddddk..",
-  "..kwdwddddmddddk..",
-  "...kwdwdddddddk...",
-  "...kkkkddddkkk....",
-  "...kk.kkkkkkk.....",
-  "...kkkk....kk....."
-]],
-  phish:[[
-  "....................",
-  ".....kkkk...........",
-  "....k...k...........",
-  "....k.k.k...........",
-  ".....kkkkkkk........",
-  "....kkllllllkk......",
-  "...klwwlllllllk....k",
-  "..kllkwllllllllk.kkk",
-  ".kllllllllldllllkmmk",
-  ".klllllllllldlllkmmk",
-  "..wlwlwlllldlllk.kkk",
-  "..kkkkkkklllllk....k",
-  "....kkllllllkk......",
-  "......kkkkkk........",
-  "...................."
-],[
-  "....................",
-  ".....kkkk...........",
-  "....k...k...........",
-  "....k.k.k...........",
-  ".....kkkkkkk........",
-  "....kkllllllkk.....k",
-  "...klwwlllllllk..kkk",
-  "..kllkwllllllllkkmmk",
-  ".kllllllllldllllkmmk",
-  ".klllllllllldlllkmmk",
-  "..wlwlwlllldlllkkmmk",
-  "..kkkkkkklllllk..kkk",
-  "....kkllllllkk.....k",
-  "......kkkkkk........",
-  "...................."
-]],
-  spam:[[
-  "......................",
-  "......................",
-  ".k..................k.",
-  "..k................k..",
-  "..kkkkkkkkkkkkkkkkkk..",
-  "...kdkkwwwwwwwwwkdk...",
-  "...kdkwkwwwwwwwkkdk...",
-  "..kkdkwwkkwwwkkwkdkk..",
-  "....kkwwwwkwkwwwkk....",
-  ".....kwwkwwkwwkwk.....",
-  ".....kwwwkwwwkwwk.....",
-  ".....kwwwwwwwwwwk.....",
-  ".....kkkkkkkkkkkk.....",
-  "......................"
-],[
-  "......................",
-  "......................",
-  "......................",
-  "......................",
-  ".....kkkkkkkkkkkk.....",
-  ".....kkwwwwwwwwwk.....",
-  ".....kwkwwwwwwwkk.....",
-  ".....kwwkkwwwkkwk.....",
-  "....kkwwwwkwkwwwkk....",
-  "..kkdkwwkwwkwwkwkdkk..",
-  "..kkkkwwwkwwwkwwkkk...",
-  "..k..kwwwwwwwwwwk..k..",
-  ".....kkkkkkkkkkkk.....",
-  "......................"
-]]
-},
-bosses:{
-  impostor:[
-  "........................................",
-  "........................................",
-  "........k......................k........",
-  "........kk....................kk........",
-  "........kdk..................kdk........",
-  ".........kdk................kdk.........",
-  ".........kddk...kkkkkkkk...kddk.........",
-  ".........kdddkkkdddddddkkkkddkkk........",
-  "........kkkkkkkkdddddddddkkkkkk.........",
-  ".......kwwwwwwwwkdddddddwwdddww.........",
-  "......kwwwwwwwwwwkddddddkwdddkwk........",
-  ".....kwwwwwwwwwwwwkdddddddddddddk.......",
-  "....kwwwwwwwwwwwwwwkdddddddddddddk......",
-  "....kwwwwkkwwwkkwwwkdddddddddddddk......",
-  "....kwwwwwwwwwwwwwwkddddddddddddddk.....",
-  "....kwwwwwwwwwwwwwwkdddddddddddddddk....",
-  "....kwwwwwwwwwwwwwkkkddddddddddddddk....",
-  "....kwwwkwwwwwwwkkmmmkdddddddddddddk....",
-  "...kdkwwwkkwwwkkwkmmmkddddddddddddddk...",
-  "...kddkwwwkkkkkwwkkkkdddddddddddddddk...",
-  "...kdddkwwwwwwwwkdddddddddddddddddddk...",
-  "...kddddkkkkkkkkdkkkkkkdddddddddddddk...",
-  "...kddddddddddklkllllllkkkddddddddddk...",
-  "...kdddddddddkllllllllllllkdddddddddk...",
-  "...kddddddddkllllllllllllllkddddddddk...",
-  "...kddddddddkllllllkkklllllkddddddddk...",
-  "....kddddddkllllllklllklllllkddddddk....",
-  "....kddddddklllllkllkklkllllkddddddk....",
-  "....kddddddklllllklklklkllllkddddddk....",
-  ".....kdddddklllllkllkkklllllkdddddk.....",
-  "......kdddddklllllkllllllllkdddddk......",
-  "......kdddddkllllllkkkkllllkdddddk......",
-  ".......kdddddkllllllllllllkdddddk.......",
-  "........kdddddkkkllllllkkkdddddk........",
-  ".........kkddddddkkkkkkddddddkk.........",
-  ".........kkkkddddddddddddddkk.kk........",
-  ".......kkkkkkkkkddddddddkkk.kkkkkk......",
-  ".......kkkkkk.kkkkkkkkkkkkk.kkkkkk......",
-  ".......kkkkkk.kkkkkk.kkkkkk.kkkkkk......",
-  ".........kk.....kk.....kk.....kk........"
-],
-  countdown:[
-  "............................k...........",
-  "...........................kwk..........",
-  "......................kkkkk.k...........",
-  "....................kk.....k............",
-  ".................kkkkkk.................",
-  ".................kmmmmk.................",
-  ".................kmmmmk.................",
-  ".................kmmmmk.................",
-  ".................kmmmmk.................",
-  "..............kkkkkkkkkkkk..............",
-  "............kkddddddddddddkk............",
-  "..........kkddddddddddddddddkkk.........",
-  ".........kkdkkkdddddddddddkkkkk.........",
-  "........kdddwwddddddddddddwwdddk........",
-  ".......kddddwkddddddddddddkwddddk.......",
-  ".......kddddddddddddddddddddddddk.......",
-  "......kddddddddddddddddddddddddddk......",
-  "......kddddddddddddddddddddddddddk......",
-  ".....kdwwwdddddddkkkkkkddddddddwwwk.....",
-  ".....kdddddddddkkwwwmwwkkdddddddddk.....",
-  ".....kddddddddkwmwwwwwwmwkddddddddk.....",
-  ".....kdddddddkwwwwwwkwwwwwkdddddddk.....",
-  ".....kdddddddkmwwwwwkwwwwmkdddddddk.....",
-  ".....kddddddkwwwwwwwkwwwwwwkddddddk.....",
-  ".....kddddddkwwwwwwwkwwwwwwkddddddk.....",
-  ".....kddddddkwwwwwwwkwwwwwwkddddddk.....",
-  ".....kddddddkmwwwwwwkkkkkwmkddddddk.....",
-  ".....kddddddkwwwwwwwwwwwwwwkddddddk.....",
-  "......kdddddkwwwwwwwwwwwwwwkdddddk......",
-  "......kddddddkmwwwwwwwwwwmkddddddk......",
-  ".......kdddddkwwwwwwwwwwwwkdddddk.......",
-  ".......kddddddkwmwwwwwwmwkddddddk.......",
-  "........kddddddkkwwwmwwkkddddddk........",
-  ".........kkddddddkkkkkkddddddkk.........",
-  "...........kddddddddddddddddk...........",
-  "............kkddddddddddddkk............",
-  "..........kkkkkkkkkkkkkkkkkkkk..........",
-  ".........kkkkkkkk......kkkkkkkk.........",
-  ".........kkkkkkkk......kkkkkkkk.........",
-  "............kk............kk............"
-],
-  lurker:[
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "......kkkkkkk...........................",
-  "...k..k.....kk..........................",
-  "..k....k.....kk.........................",
-  "...k..kkkk....kk........................",
-  ".....k....k....k........................",
-  ".....k....k....kk.......................",
-  "......kkkk......k.......................",
-  "..............kkkkkkkk..................",
-  "...........kkkllllllllkkk...............",
-  ".........kklllkklllllllllkk...........k.",
-  ".......kklllllllkkkllllllllkk........kk.",
-  "......klllllllllwwlllllllllllk......kk..",
-  ".....kllllllllllkwllllllllllllk....kmk..",
-  ".....kllllllllllllllllllllllllk...kmmk..",
-  "....kllllllllllllllllllllllllllk.kmmk...",
-  "....kllllllllllllllllllllllllllkkmmmk...",
-  "...klllllllllllllllllldlllllllllkmmmk...",
-  "...kwkkwllwllwllllllllldllllllllkmmk....",
-  "...kkwkkwklwllwllllllldlllllllllkmmk....",
-  "...kkkkkkkkkklllllllllldllllllllkmmk....",
-  "...kkkkkkkkkkklllllllldlllllllllkmmmk...",
-  "...kkkkkkkkkllllllllllllllllllllkmmmk...",
-  "...kkkkkkkkllllllllllllllmlllllk.kmmk...",
-  "...kkkkkkllllllllllllllllllllllk..kmmk..",
-  "...kkkklllllllllllllmlllllllllk....kmk..",
-  "...kkwllwllwllwlllllllllllllllk.....kk..",
-  "...kw.kwllwllwlllllllllllllllk.......kk.",
-  ".......kklllllllllllllllllmkk.........k.",
-  ".........kkllllllllllllllkk.............",
-  "...........kkklllllllmkkk...............",
-  "..............kkkkkkkk..................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................"
-],
-  gremlin:[
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "..........kkkkkkkkkkkkkkkkkkkk..........",
-  "..........kllllllllllllllllllk..........",
-  "..........kllkkkkkkkkkkkkkkllk..........",
-  "..........kllkwwwwwwwwwwwwkllk..........",
-  "..........kllkwwwwwwwwwwwwkllk..........",
-  "..........kllkwwwwkkkkwwwwkllk..........",
-  "...k......kllkwwwwkwwwkwwwkllk..........",
-  "...k.....kkllkwwwwkwwwkwwwkllkk.........",
-  "....k...kdkllkwwwwkkkkwwwwkllkdk........",
-  "k...k.kkddkllkwwwwkwkwwwwwkllkddkk......",
-  ".k...kddddkllkwwwwkwwkwwwwkllkddddk.....",
-  "..k.kkddddkllkwwwwkwwwkwwwkllkdddddk....",
-  "..k.kdkdddkllkwwwwwwwwwwwwkllkdddddk....",
-  "...kddkdddkllkwwwwwwwwwwwwkllkddddddk...",
-  "...kkdddddkllkkkkkkkkkkkkkkllkddddddk...",
-  "...kdkddddkllllllllllllllllllkddddddk...",
-  "...kwwddddkllllllllllllllllllkddddddk...",
-  "...kkwddddkkkkkkkkkkkkkkkkkkkkddddddk...",
-  "...kdddwwdddddddddddddddddddddddddddk...",
-  "....kddkwddddddddddddddddddddddddddk....",
-  "....kddddddddddddddddddddddddddddddk....",
-  "...w.wdwddddddddddddddddddddddddddk.....",
-  "....w.wkddddddddddddddddddddddddkk......",
-  ".......kkddddddddddddddddddddddk........",
-  "......kkkkkddddddddddddddddddkk.........",
-  "......kk...kkkkddddddddddkkkk...........",
-  "......kk.......kkkkkkkkkkkk.............",
-  "......kk.......kkk.......kk.............",
-  ".....kk........kk........kk.............",
-  ".....kk........kk........kk.............",
-  ".....kk........kk........kk............."
-],
-  spoof:[
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "..............................kkkkk.....",
-  "..........................kkkkdddk......",
-  "...........................kdddddk......",
-  "............................kddddk......",
-  ".............................kddkdk.....",
-  ".............................kkdkddk....",
-  "..............................kkkdddk...",
-  "...kkkkkkkkkkkkkkkkkkkkkkkkkkkkkdddddk..",
-  "...kkwwwwwwwwwwwwwwwwwwwwwwwwwk.kdddddk.",
-  "...kwkwwwwwwwwwwwwwwwwwwwwwwwkk..kddddk.",
-  "...kwwkwwwwwwwwwwwwwwwwwwwwwkwk...kdddk.",
-  "...kwwwkkwwwwwwwwwwwwwwwwwkkwwk....kddk.",
-  "...kwwwwwkwwwwwwwwwwwwwwwkwwwwk....kddk.",
-  "...kwwwwwwkwwwwwwwwwwwwwkwwwwwk....kddk.",
-  "...kwwwwwwwkwwwwwwwwwwwkwwwwwwk....kddk.",
-  "...kwwwwwwwwkwwwwwwwwwkwwwwwwwk....kddk.",
-  "...kwwwwwwwwwkkwwwwwkkwwwwwwwwk....kddk.",
-  "...kwwwwwwwwwwwkwwwkwwwwwwwwwwk....kddk.",
-  "...kwwwwwwwwwwwwkwkwwwwwwwwwwwk....kddk.",
-  "...kwwwwwwwwwwwwwkwwwwwwwwwwwwk..kkdddk.",
-  "...kwwwwkkwwwwwwkkwwwwwwwwwwwwk.kdddddk.",
-  "...kwwwwwwkkwwkkwwwwwwwwwwwwwwkkdddddkk.",
-  "...kwwwwwwwwwwwwwwwwwwwwwwwwwwkddddkk...",
-  "...kwwwwwkwwwwwkwwwwwwwwwwwwwwkdddk.....",
-  "...kwwwwwwwwwwwwwwwwwwwwwwwwwwkdkk......",
-  "...kwwwwwwwwwwwwwwwwwwwwwwwwwwkk........",
-  "...kwkwwwkkkkkkkkwwwwwwwwwwwwwk.........",
-  "...kwwkkkwwwwwwwwwwwwwwwwwwwwwk.........",
-  "...kkkkkkkkkkkkkkkkkkkkkkkkkkkk.........",
-  "........................................",
-  ".......kkkk....kkkk....kkkk.............",
-  "......kkkkkk..kkkkkk..kkkkkk............",
-  ".......kkkk....kkkk....kkkk.............",
-  "........................................"
-],
-  thief:[
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "........................................",
-  "..............kkkkkk....................",
-  "...........kkkllllllkkk.................",
-  "..........kllllllllllllk................",
-  "........kkllllllllllllllkk..............",
-  ".......kllllllllllllllllllk.............",
-  "....kkkkkkkkkkkkkkkkkkkkkkkkkk..........",
-  "....kkkkkkkkkkkkkkkkkkkkkkkkkk..........",
-  "....kkkkkwwkkkkkkwwkkkkkkkkkkk..........",
-  "....kkkkkkwkkkkkkkwkkkkkkkkkkk..........",
-  "....kkkkkkkkkkkkkkkkkkkkkkkkkk..........",
-  "....kllllllllllllllllllllllllk..........",
-  "....kllllllllllllllllllllllllk..........",
-  "....kllllllllllllllllllllllllk..........",
-  "....kllllllllllllllllllllllllk..........",
-  "....kllllllllllllllllllllllllkkkkk......",
-  "....kllllllllllllllllllllllllkmmmmk.....",
-  "....kllllllkkkkkkklllllllllllkmmmmmk....",
-  "....klllllllwlllwllllllllllllkmmmmmmk...",
-  "....kllllllllllllllllllllllllkmmmmmmmk..",
-  "....kllllllllllllllllllllllllkmmmmmmmk..",
-  "...kkkkllllllllllllllllllllllkmmmmmmmk..",
-  "..kddddkllllllllllllllllllllkmmmmmmmmk..",
-  "..kdddddkkkkkkkllllllllllllwkmmwmmmwmk..",
-  "..kddwddkkkkkkklllllllllllwwwmwwwmwwwk..",
-  "..kddddkllllllllllllllllllkwmmmwmmmwmk..",
-  "...kkkkklllllklkllllllllllkmmmmmmmmmmk..",
-  "........kkllllllllllllllkkmmmmmmmmmmk...",
-  "..........kllllllllllllk..kmmmmmmmmk....",
-  "...........kkkllllllkkk....kmmmmmmk.....",
-  ".........kkkkkkkkkkkkkkkk...kkkkkk......",
-  "........kkkkkkkk..kkkkkkkk..............",
-  ".........kkkkkk....kkkkkk...............",
-  "..........kkkk......kkkk................"
-]
-}};
-const CLOUD=["....llll.......","..ll....ll.....",".l........llll.","l.............l","lllllllllllllll"];
-const ART={
-  kak:{base:bake(KAK.rows), blaster:bake(BLASTER), flash:bake(FLASH), sword:bake(SWORD), hand:KAK.hand},
-  min:{}, boss:{}, cloud:bake(CLOUD)
-};
-for(const k in MON.minions) ART.min[k]=MON.minions[k].map(bake);
-for(const k in MON.bosses) ART.boss[k]=bake(MON.bosses[k]);
+/* ================= art =================
+   All sprites are PNGs in assets/sprites/, drawn 1 file-pixel per art pixel and scaled up
+   with smoothing off. Greys only: #1A1A1A, #535353, #A8A8A8, #D9D9D9, white. */
+const META={"kak":{"stand":{"w":44,"h":98,"foot":22,"head":23},"run1":{"w":79,"h":100,"foot":33,"head":53},"run2":{"w":79,"h":100,"foot":33,"head":53},"shoot":{"w":109,"h":102,"foot":34,"head":42,"muzzle":[100,28]},"trip":{"w":84,"h":83,"foot":35,"head":53},"sword":{"w":70,"h":91,"foot":19,"head":20,"hand":[43,43]}}};
+const SPRITES=["kak-stand","kak-run1","kak-run2","kak-shoot","kak-trip","kak-sword",
+  "slime-1","slime-2","goblin-1","goblin-2","imp-1","imp-2",
+  "boss-mimic","boss-fireimp","boss-shifter","boss-kobold","boss-ogre","boss-dragon"];
+const IMG={};
+const artReady=Promise.all(SPRITES.map(n=>new Promise(res=>{
+  const im=new Image(); im.onload=()=>{ IMG[n]=im; res(); }; im.onerror=()=>res(); im.src="assets/sprites/"+n+".png";
+})));
+const GREYS=["#1A1A1A","#535353","#535353","#A8A8A8","#A8A8A8","#D9D9D9","#FFFFFF"];
 
 /* ================= mails ================= */
 const MAILS = [
@@ -806,7 +256,7 @@ const MAILS = [
     hint:"Read everything after the @ sign. Slowly.",
     tag:"LOOKALIKE DOMAIN",
     lesson:"Our real helpdesk sends from <b>@petronas.com</b>. Anything with an extra word welded on &mdash; <b>-helpdesk</b>, <b>-support</b>, <b>-secure</b> &mdash; belongs to someone else. It only reads like us.",
-    boss:"impostor", bossName:"The Impostor"
+    boss:"mimic", bossName:"Mimic", scam:"Lookalike domain"
   },
   {
     subject:"Action needed on your account",
@@ -819,7 +269,7 @@ const MAILS = [
     hint:"Which sentence is trying to stop you thinking?",
     tag:"MANUFACTURED URGENCY",
     lesson:"Real providers give you weeks and never open with a countdown. The panic <b>is</b> the attack &mdash; it exists so you click before you check.",
-    boss:"countdown", bossName:"The Countdown"
+    boss:"fireimp", bossName:"Fire Imp", scam:"Fake urgency"
   },
   {
     subject:"Your password expires today",
@@ -833,7 +283,7 @@ const MAILS = [
     hint:"The words and the destination disagree.",
     tag:"MISMATCHED LINK",
     lesson:"Link text is only text &mdash; anyone can type anything there. Hover on desktop, long-press on mobile, and read the <b>real</b> address first.",
-    boss:"lurker", bossName:"The Link Lurker"
+    boss:"shifter", bossName:"Shapeshifter", scam:"Mismatched link"
   },
   {
     subject:"Action required: device verification failed",
@@ -848,7 +298,7 @@ const MAILS = [
     hint:"What is it asking you to do with your own keyboard?",
     tag:"CLICKFIX &mdash; PASTE AND RUN",
     lesson:"Nothing legitimate ever asks you to open Run and paste a command. There is no attachment to scan and no download to block, because <b>you</b> are the delivery mechanism. This is now the single most common way attackers get in &mdash; and no real IT team, and no real CAPTCHA, will ever ask it of you.",
-    boss:"gremlin", bossName:"The ClickFix Gremlin"
+    boss:"kobold", bossName:"Kobold Trickster", scam:"ClickFix paste-and-run"
   },
   {
     subject:"Quick favour",
@@ -861,7 +311,7 @@ const MAILS = [
     hint:"Where would your reply actually land?",
     tag:"REPLY-TO SPOOF",
     lesson:"The From line can look flawless while <b>Reply-To</b> quietly points somewhere else. Your answer goes to the attacker, not to your CISO.",
-    boss:"spoof", bossName:"The Reply-To Mimic"
+    boss:"ogre", bossName:"Two-headed Ogre", scam:"Reply-to spoof"
   },
   {
     subject:"Annual account verification",
@@ -873,7 +323,7 @@ const MAILS = [
     hint:"What are they actually asking you to hand over?",
     tag:"CREDENTIAL REQUEST",
     lesson:"No IT team anywhere asks for your password &mdash; not by mail, not by phone, not ever. The ask itself is the flag, however right the sender looks.",
-    boss:"thief", bossName:"The Password Thief"
+    boss:"dragon", bossName:"Small Dragon", scam:"Password request"
   }
 ];
 const RECAP=`<ol>
@@ -884,6 +334,7 @@ const RECAP=`<ol>
       <li>Check Reply-To, not just From</li>
       <li>Nobody legitimate ever asks for your password</li>
     </ol>`;
+
 
 /* ================= sound (Web Audio, made on the fly) ================= */
 let soundOn=false, unlocked=false, ac=null, master=null;
@@ -950,40 +401,42 @@ function sndButton(){
   b.innerHTML=`<svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true" fill="currentColor"><rect x="0" y="4" width="3" height="4"/><rect x="3" y="3" width="1" height="6"/><rect x="4" y="2" width="1" height="8"/><rect x="5" y="1" width="1" height="10"/>${waves}</svg>SOUND ${soundOn?"ON":"OFF"}`;
 }
 
+
 /* ================= state ================= */
 const $ = id => document.getElementById(id);
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const MAXH=4;
-let i=0, found=0, hearts=MAXH, solved=false, ready=false, done=false, over=false, started=false;
-let poking=false, backLine="";
+let i=0, found=0, hearts=MAXH, trips=0, solved=false, ready=false, done=false, started=false;
+let poking=false, backLine="", talkTimer=null;
 
-/* world geometry, in CSS pixels */
 const cv=$("cv"), ctx=cv.getContext("2d"), world=$("world");
-let W=0, H=0, DPR=1, S=1.5, GY=0, colL=18, colW=300, RUN=200;
+let W=0, H=0, DPR=1, S=1.5, U=1, GY=0, colL=18, colW=300, RUN=200;
 function layout(){
   DPR=Math.min(3, window.devicePixelRatio||1);
   W=world.clientWidth; H=world.clientHeight;
   cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR);
-  S = innerWidth>=760 ? 1.5 : 1.25;               /* one art pixel on screen */
+  S = innerWidth>=760 ? 1.5 : 1.2;              /* screen px per Kak Timah art pixel */
+  U = S/1.5;                                    /* size unit for everything else */
   RUN = 150*S;
-  GY = H-34;                                       /* top of the ground line */
+  GY = H-34;
   const cw=Math.min(900,W); colL=(W-cw)/2+18; colW=cw-36;
 }
-const KW=()=>ART.kak.base.width*S, KH=()=>ART.kak.base.height*S;
-const homeX=()=>colL;
+const K = key => META.kak[key];
+const homeX = () => colL + 24*S;                /* x of her feet */
 
-const kak={x:18, pose:"stand", pt:0, arc:0, ouchAt:-1e9};
-let scene="intro";            /* intro | chase | finale | won | done | over */
+const kak={x:0, pose:"stand", pt:0, arc:0, ouchAt:-1e9};
+let scene="intro";            /* intro | chase | finale | won | done */
 let speed=0, targetSpeed=0, scroll=0, runT=0, shootUntil=0, cool=0, spawnIn=700, dustIn=0;
-let mons=[], bolts=[], parts=[], puffs=[], slashes=[], flash=0, boss=null, trip=null, fin=null;
+let mons=[], bolts=[], bits=[], puffs=[], boss=null, trip=null, fin=null, impact=0;
 const clouds=[{x:120,y:26},{x:520,y:58},{x:880,y:18}];
+const CLOUD=["....llll.......","..ll....ll.....",".l........llll.","l.............l","lllllllllllllll"];
 
 function label(t){ cv.setAttribute("aria-label", t); }
 function sr(t){ $("sr").textContent=""; setTimeout(()=>{ $("sr").textContent=t; },30); }
 function shake(kind){
   if(reduce) return;
   const g=$("game"); g.classList.remove("shake","quake"); void g.offsetWidth; g.classList.add(kind);
-  setTimeout(()=>g.classList.remove(kind), 520);
+  setTimeout(()=>g.classList.remove(kind), 480);
 }
 
 /* ---------- speech ---------- */
@@ -993,82 +446,176 @@ function setLine(html){
   placeTalk();
 }
 function say(html){
+  clearTimeout(talkTimer);
   if(poking){ backLine=html; return; }
   setLine(html);
+}
+/* a short run of lines, one after another, then back to `after` */
+function sayRun(lines, after){
+  clearTimeout(talkTimer);
+  let k=0;
+  const step=()=>{
+    if(k>=lines.length){ if(after) after(); return; }
+    const [html,ms]=lines[k++];
+    if(poking) backLine=html; else setLine(html);
+    talkTimer=setTimeout(step, ms);
+  };
+  step();
+}
+function headPoint(){
+  const p=kak.pose, key=p==="run"?"run1":p==="shoot"?"shoot":p==="trip"?(kak.tripImg||"stand"):p==="slash"?"sword":"stand";
+  const m=K(key);
+  return [kak.x+(m.head-m.foot)*S, GY+3-m.h*S];
 }
 function placeTalk(){
   const t=$("talk"); if(t.classList.contains("hidden")) return;
   const bw=t.offsetWidth, bh=t.offsetHeight;
-  let hx, top;
-  const lying = kak.pose==="trip" && kak.pt>0.6;
-  if(lying){                                    /* on the floor: her head is out to the right */
-    hx = kak.x + KW()*0.78 + KH()*0.8; top = GY - 22*S;
-  } else {
-    hx = kak.x + 19*S; top = GY + 3 - KH() + 1*S;
-  }
+  const [hx,hy]=headPoint();
   const left=Math.round(Math.max(8, Math.min(W-bw-8, hx-bw/2)));
-  const y=Math.round(Math.max(2, top-14-bh));
+  const y=Math.round(Math.max(2, hy-16-bh));
   t.style.transform=`translate(${left}px,${y}px)`;
   $("tail").style.left=Math.round(Math.max(10, Math.min(bw-24, hx-left-6)))+"px";
 }
 
 /* ---------- hearts & score ---------- */
 const HEART=[".kk.kk.","kddkddk","kdwdddk","kdddddk",".kdddk.","..kdk..","...k..."];
-function heartSVG(full, lost){
+function heartSVG(full){
   let r="";
   HEART.forEach((row,y)=>{ for(let x=0;x<row.length;x++){ const c=row[x]; if(c===".") continue;
     const col = full ? (c==="k"?"#1C1C1C":c==="w"?"#FFFFFF":"#535353") : (c==="k"?"#A8A8A8":null);
     if(col) r+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${col}"/>`; } });
-  return `<svg viewBox="0 0 7 7" shape-rendering="crispEdges"${lost?' class="lost"':""} aria-hidden="true">${r}</svg>`;
+  return `<svg class="${full?"full":"empty"}" viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
 }
-function drawHearts(lostIdx){
-  $("hearts").innerHTML=Array.from({length:MAXH},(_,k)=>heartSVG(k<hearts, k===lostIdx)).join("");
-  $("hearts").setAttribute("aria-label", `${hearts} of ${MAXH} hearts left`);
+function drawHearts(){
+  $("hearts").innerHTML=Array.from({length:MAXH},(_,k)=>`<span class="heart${k<hearts?"":" gone"}">${heartSVG(false)}${heartSVG(true)}</span>`).join("");
+  heartLabel();
+}
+function heartLabel(){ $("hearts").setAttribute("aria-label", `${hearts} of ${MAXH} hearts left`); }
+function loseHeart(){
+  if(hearts<=0) return;                     /* out of hearts: nothing special, the game carries on */
+  hearts--;
+  const el=$("hearts").children[hearts]; if(el) el.classList.add("gone");   /* smooth fade to the empty outline */
+  heartLabel();
+  SFX.hurt();
 }
 function scoreboard(){
   $("score").innerHTML="CAUGHT <b>"+String(found).padStart(2,"0")+"</b> / "+String(MAILS.length).padStart(2,"0");
 }
 
-/* ================= monsters & effects ================= */
-const MTYPES=["bug","phish","spam"];
+/* ================= Kak Timah ================= */
+/* trip, ~0.8 s: lurch with "!", stumble (tripping drawing), land with a dust puff, pop back up */
+const TRIP=[0.15,0.45,0.68], TRIP_MS=800;
+function pose(name,t){
+  switch(name){
+    case "run":   { const f=Math.floor(t)%2; return {key:f?"run2":"run1", dy:f?-1.5:0}; }
+    case "shoot": return {key:"shoot"};
+    case "slash": return {key:"sword"};
+    case "victory": { const h=Math.sin(Math.PI*Math.min(1,t)); return {key:"stand", dy:-h*10, sx:1-h*0.03, sy:1+h*0.04}; }
+    case "trip": {
+      if(reduce) return {key:"trip"};                                  /* a single stumble frame */
+      if(t<TRIP[0]){ const k=t/TRIP[0]; return {key:"stand", lean:0.31*k, dx:3*k, bang:true}; }
+      if(t<TRIP[1]){ const k=(t-TRIP[0])/(TRIP[1]-TRIP[0]); return {key:"trip", dy:-4*Math.sin(Math.PI*k)}; }
+      if(t<TRIP[2]){ const k=(t-TRIP[1])/(TRIP[2]-TRIP[1]); return {key:"trip", lean:0.22*Math.min(1,k*2), sy:0.95}; }
+      const k=(t-TRIP[2])/(1-TRIP[2]);
+      return {key:"stand", dy:-9*Math.sin(Math.PI*Math.min(1,k*1.5)), lean:Math.sin(k*Math.PI*4)*0.06*(1-k)};
+    }
+    case "ouch": { if(reduce) return {key:"stand", sx:1.08, sy:0.92};
+      const w=Math.sin(t*Math.PI*6)*(1-t); return {key:"stand", lean:w*0.18, sx:1.16-t*0.16, sy:0.84+t*0.16}; }
+    default: return {key:"stand"};
+  }
+}
+function drawKak(){
+  const p=pose(kak.pose,kak.pt), m=K(p.key), img=IMG["kak-"+p.key]; if(!img) return;
+  kak.tripImg = p.key;
+  const w=m.w*S, h=m.h*S;
+  ctx.save();
+  ctx.translate(Math.round(kak.x+(p.dx||0)*S), Math.round(GY+3+(p.dy||0)*S));
+  ctx.rotate(p.lean||0); ctx.scale(p.sx||1, p.sy||1);
+  const ox=-m.foot*S, oy=-h;
+  ctx.drawImage(img, Math.round(ox), Math.round(oy), w, h);
+  if(p.bang){                                   /* a pixel "!" just in front of her head */
+    const u=Math.max(3,Math.round(2*S)), bx=Math.round(ox+m.head*S+18*S), by=Math.round(oy+2*S);
+    ctx.fillStyle="#1A1A1A"; ctx.fillRect(bx-u*1.5-2, by-u-2, u*3+4, u*9+4);
+    ctx.fillStyle="#FFFFFF"; ctx.fillRect(bx-u*1.5, by-u, u*3, u*9);
+    ctx.fillStyle="#1A1A1A"; ctx.fillRect(bx-u/2, by, u, u*5); ctx.fillRect(bx-u/2, by+u*6, u, u);
+  }
+  if(p.key==="sword" && kak.arc>0) slashArc(ox+m.hand[0]*S, oy+m.hand[1]*S, kak.arc);
+  ctx.restore();
+}
+function sparkle(x,y,k){
+  ctx.save(); ctx.globalAlpha=k;
+  const P=[[0,-2],[0,-1],[0,1],[0,2],[-2,0],[-1,0],[1,0],[2,0]];
+  ctx.fillStyle="#1A1A1A"; for(const [dx,dy] of P) ctx.fillRect(Math.round(x+dx*S), Math.round(y+dy*S), Math.ceil(S), Math.ceil(S));
+  ctx.fillStyle="#FFFFFF"; ctx.fillRect(Math.round(x), Math.round(y), Math.ceil(S), Math.ceil(S));
+  ctx.restore();
+}
+/* solid crescent slash: always the same size */
+function slashArc(cx,cy,k){
+  const R=45*S, th=16*S, a0=-1.75, a1=0.95, mid=(a0+a1)/2;
+  const crescent=(r,t)=>{ const ox=Math.cos(mid)*t, oy=Math.sin(mid)*t;
+    ctx.beginPath(); ctx.arc(cx,cy,r,a0,a1); ctx.arc(cx-ox,cy-oy,r,a1-0.02,a0+0.02,true); ctx.closePath(); };
+  ctx.save(); ctx.globalAlpha=k;
+  crescent(R+2.5*S, th+3*S); ctx.fillStyle="#1A1A1A"; ctx.fill();
+  crescent(R, th); ctx.fillStyle="#A8A8A8"; ctx.fill();
+  crescent(R-1.5*S, th*0.45); ctx.fillStyle="#FFFFFF"; ctx.fill();
+  ctx.restore();
+  for(let n=0;n<12;n++){ const a=a0+(n+0.5)/12*(a1-a0), rr=R+(4+((n*53)%9))*S; sparkle(cx+Math.cos(a)*rr, cy+Math.sin(a)*rr, k); }
+}
+function dustPuff(x,y,k){
+  const blobs=[[0,-4,4],[-8,-3,3],[8,-3,3],[-4,-8,2.5],[5,-8,2],[-12,-2,1.5],[12,-2,1.5]];
+  ctx.save(); ctx.globalAlpha=k;
+  const px=(cx,cy,r,col)=>{ ctx.fillStyle=col;
+    for(let yy=-Math.ceil(r);yy<=Math.ceil(r);yy++) for(let xx=-Math.ceil(r);xx<=Math.ceil(r);xx++)
+      if(xx*xx+yy*yy<=r*r) ctx.fillRect(Math.round(x+(cx+xx)*U*1.5), Math.round(y+(cy+yy)*U*1.5), Math.ceil(U*1.5), Math.ceil(U*1.5)); };
+  for(const [dx,dy,r] of blobs) px(dx,dy,r+1,"#A8A8A8");
+  for(const [dx,dy,r] of blobs) px(dx,dy,r,"#F2F2F2");
+  ctx.restore();
+}
+
+/* ================= monsters ================= */
+/* each minion type keeps ONE scale for both frames, so the frames swap without pulsing */
+const MINION={
+  slime:{h:52, fly:0,  v:30, ms:200},
+  goblin:{h:60, fly:0, v:50, ms:180},
+  imp:{h:56, fly:46,   v:70, ms:130},
+};
+const BOSS_H={mimic:140, fireimp:150, shifter:150, kobold:150, ogre:158, dragon:190};
+function minionScale(type){ return MINION[type].h*U / IMG[type+"-1"].height; }
 function spawn(x){
-  const t=MTYPES[Math.floor(Math.random()*MTYPES.length)];
-  const a=ART.min[t][0], sc=S*1.25;
-  mons.push({type:t, x:x==null?W+8:x, w:a.width*sc, h:a.height*sc, sc, t:Math.random()*400,
-    v:{bug:30,phish:55,spam:75}[t],
-    base: t==="bug" ? GY+3 : t==="phish" ? GY-12*S : GY-46*S});
+  const types=Object.keys(MINION), t=types[Math.floor(Math.random()*types.length)];
+  const sc=minionScale(t);
+  mons.push({type:t, x:x==null?W+8:x, sc, w:IMG[t+"-1"].width*sc, h:IMG[t+"-1"].height*sc, t:Math.random()*400});
 }
-function monY(m){
-  const bob = reduce ? 0 : m.type==="phish" ? Math.sin(m.t/180)*3 : m.type==="spam" ? Math.sin(m.t/110)*5 : 0;
-  return m.base - m.h + bob;
-}
-function kakTop(){ return GY + 3 - KH(); }
+function monFrame(m){ return reduce ? 0 : Math.floor(m.t/MINION[m.type].ms)%2; }
+function monBottom(m){ const f=MINION[m.type].fly; return GY+3 - f*U + (f && !reduce ? Math.sin(m.t/120)*4*U : 0); }
+function monBox(m){ const img=IMG[m.type+"-"+(monFrame(m)+1)], w=img.width*m.sc, h=img.height*m.sc; return {x:m.x, y:monBottom(m)-h, w, h, img}; }
 function fire(m){
   m.targeted=true;
-  shootUntil=performance.now()+160;
-  bolts.push({x:kak.x+(ART.kak.hand[0]+12)*S, y:kakTop()+(ART.kak.hand[1]-2.5)*S-2, m, a:0});
+  shootUntil=performance.now()+170;
+  const s=K("shoot");
+  bolts.push({x:kak.x+(s.muzzle[0]-s.foot)*S, y:GY+3-s.h*S+s.muzzle[1]*S, m, a:0});
   SFX.pew();
 }
-/* explode an art bitmap into flying pixels */
-function burst(art, x, y, sc, power, push){
-  const rows=art.rows, cx=rows[0].length/2, cy=rows.length/2;
-  rows.forEach((r,py)=>{ for(let px=0;px<r.length;px++){
-    const col=PAL[r[px]]; if(!col || col==="#FFFFFF" && Math.random()<0.5) continue;
-    const dx=px-cx, dy=py-cy, d=Math.hypot(dx,dy)||1, sp=power*(0.4+Math.random()*0.8);
-    parts.push({x:x+px*sc, y:y+py*sc, s:Math.max(1.5,sc), c:col,
-      vx:dx/d*sp+(push||0)*(0.5+Math.random()), vy:dy/d*sp-power*0.6*Math.random(),
-      g:900, life:500+Math.random()*600, max:1100});
-  }});
+/* chunky pixel squares that burst out and fade in ~0.5 s */
+function burst(x,y,w,h,n,size,power){
+  if(reduce) return;
+  for(let k=0;k<n;k++){
+    const sx=x+Math.random()*w, sy=y+Math.random()*h, cx=x+w/2, cy=y+h/2;
+    const dx=sx-cx, dy=sy-cy, d=Math.hypot(dx,dy)||1, sp=power*(0.5+Math.random()*0.7);
+    bits.push({x:sx, y:sy, vx:dx/d*sp, vy:dy/d*sp-power*0.35, s:Math.round(size*(0.7+Math.random()*0.6)),
+      c:GREYS[Math.floor(Math.random()*GREYS.length)], life:500, max:500});
+  }
 }
 function pop(m){
   m.dead=true;
-  burst(ART.min[m.type][0], m.x, monY(m), m.sc, 160, 40);
+  const b=monBox(m);
+  burst(b.x,b.y,b.w,b.h,12,5*U,150);
   SFX.pop();
 }
 
 /* ================= scenes ================= */
 function startChase(){
-  scene="chase"; fin=null; trip=null; boss=null; bolts=[]; slashes=[]; mons=[];
+  scene="chase"; fin=null; trip=null; boss=null; bolts=[]; mons=[];
   kak.x=homeX(); kak.arc=0;
   spawnIn=500; cool=0;
   if(reduce){ targetSpeed=speed=0; spawn(colL+colW*0.6); }
@@ -1076,80 +623,72 @@ function startChase(){
   label("Kak Timah is running and blasting malware and phishing monsters while you read the email");
 }
 
-/* wrong answer: she trips. fatal = that was the last heart */
-function startTrip(fatal){
-  trip={t:0, fatal, thud:false, k:reduce?1:0};
+/* wrong answer: trip (heart fades at the stumble), then "Oops" and "Think before you click" */
+function startTrip(){
+  trips++;
+  trip={t:0, hurt:false, thud:false};
   targetSpeed=0;
-  if(reduce){ SFX.thud(); }
+  if(reduce){ loseHeart(); trip.hurt=true; SFX.thud(); }
 }
 function tripUpdate(dt){
-  trip.t+=dt; const t=trip.t;
-  if(reduce){
-    if(t>1300 && !trip.fatal){ trip=null; }
-    return;
-  }
-  /* tip forward and fall (0..260ms), lie there, then get back up */
-  if(t<260) trip.k=t/260;
-  else if(!trip.thud){
-    trip.thud=true; trip.k=1; SFX.thud(); shake("shake");
-    puffs.push({x:kak.x+KW()*0.78+KH()*0.85, t:0}, {x:kak.x+KW()*0.3, t:-60});
-  }
-  if(trip.fatal) return;
-  if(t>850) trip.k=1-Math.min(1,(t-850)/300);
-  if(t>1150){ trip=null; if(scene==="chase") targetSpeed=RUN; }
-}
-function dust(x,n){
-  for(let k=0;k<n;k++) parts.push({x:x+Math.random()*10-5, y:GY-2-Math.random()*4, s:S*1.5, c:"#A8A8A8",
-    vx:-speed*0.35-20-Math.random()*40, vy:-30-Math.random()*50, g:120, life:260+Math.random()*200, max:460});
+  trip.t+=dt; const k=trip.t/TRIP_MS;
+  if(reduce){ if(trip.t>1300){ trip=null; } return; }
+  if(!trip.hurt && k>=TRIP[0]){ trip.hurt=true; loseHeart(); shake("shake"); }
+  if(!trip.thud && k>=TRIP[1]){ trip.thud=true; SFX.thud(); puffs.push({x:kak.x+44*S,t:0},{x:kak.x-20*S,t:-60}); }
+  if(k>=1){ trip=null; if(scene==="chase") targetSpeed=RUN; }
 }
 
-/* right answer: boss shows up, she draws her sword and slashes it to pixels */
+/* right answer: the boss drops in, she dashes and slashes it into pixels */
 function startFinale(){
   scene="finale"; trip=null; bolts=[];
   targetSpeed=0;
-  const m=MAILS[i], art=ART.boss[m.boss], sc=S*1.4, w=art.width*sc, h=art.height*sc;
-  const x=Math.min(W-w-10, kak.x+KW()+Math.max(56, colW*0.26));
-  boss={art, sc, w, h, x, y: reduce ? GY+3-h : -h-10, vy:0, ty:GY+3-h, landed:reduce};
+  const m=MAILS[i], img=IMG["boss-"+m.boss], h=BOSS_H[m.boss]*U, w=img.width*h/img.height;
+  const x=Math.min(W-w-10, kak.x+30*S+Math.max(50*U, colW*0.22));
+  boss={img, w, h, x, y: reduce ? GY+3-h : -h-10, vy:0, ty:GY+3-h, landed:reduce};
   mons.forEach((mm,k)=>{ mm.popAt=k*90; });
-  fin={t:0, pose:"stand", x0:kak.x};
-  say(`<b>THERE IT IS.</b> ${m.bossName}!`);
-  label(`${m.bossName} appears. Kak Timah draws her sword`);
-  if(reduce){ fin.pose="slash"; }
+  fin={t:0, pose:"stand", x0:kak.x, bossCx:x+w/2};
+  say(`<b>THERE IT IS.</b> The ${m.bossName}!`);
+  label(`The ${m.bossName} appears. Kak Timah draws her sword`);
+  if(reduce){ fin.pose="slash"; kak.arc=1; }
 }
 function finUpdate(dt){
   fin.t+=dt; const t=fin.t;
   mons.forEach(m=>{ if(!m.dead && m.popAt!=null && t>=m.popAt) pop(m); });
   if(reduce){
-    if(t>=900 && boss){ boss=null; SFX.smash(); }
-    if(t>=900 && !fin.won) win();
+    if(t>=900 && boss){ boss=null; kak.arc=0; SFX.smash(); defeated(); }
+    if(t>=1100 && !fin.won) win();
     return;
   }
-  /* boss drops in */
   if(boss && !boss.landed && t>250){
     boss.vy+=2600*dt/1000; boss.y+=boss.vy*dt/1000;
-    if(boss.y>=boss.ty){ boss.y=boss.ty; boss.landed=true; SFX.thud(); shake("shake"); puffs.push({x:boss.x+boss.w*0.2,t:0},{x:boss.x+boss.w*0.8,t:0}); }
+    if(boss.y>=boss.ty){ boss.y=boss.ty; boss.landed=true; SFX.thud(); shake("shake"); puffs.push({x:boss.x+boss.w*0.25,t:0},{x:boss.x+boss.w*0.75,t:0}); }
   }
-  if(t>=950 && !fin.drawn){ fin.drawn=true; fin.pose="draw"; SFX.shing(); }
+  if(t>=950 && !fin.drawn){ fin.drawn=true; fin.pose="slash"; SFX.shing(); }
   if(t>=1250 && !fin.dashed){ fin.dashed=true; SFX.whoosh(); }
-  if(t>=1250 && t<1430 && boss){
-    const k=(t-1250)/180, tx=boss.x-KW()*0.75;
-    kak.x=fin.x0+(tx-fin.x0)*k*k;
-    if(Math.random()<0.6) dust(kak.x+10*S,1);
-  }
+  const sw=K("sword"), tx=boss ? boss.x-(sw.w-sw.foot)*S*0.55 : kak.x;
+  if(t>=1250 && t<1430 && boss){ const k=(t-1250)/180; kak.x=fin.x0+(tx-fin.x0)*k*k; }
   if(t>=1430 && !fin.hit && boss){
-    fin.hit=true; fin.pose="slash"; fin.hitAt=t;
-    kak.x=boss.x-KW()*0.75;
-    flash=0.85;
-    const b=boss, x0=b.x-b.w*0.25, y0=b.y-b.h*0.15, x1=b.x+b.w*1.2, y1=b.y+b.h*1.05;
-    [-14,0,14].forEach((o,k)=>slashes.push({x0:x0+o, y0:y0-o*0.6, x1:x1+o, y1:y1-o*0.6, t:-k*55, dur:420}));
-    burst(b.art, b.x, b.y, b.sc, 340, 160);
+    fin.hit=true; fin.hitAt=t; kak.x=tx;
+    impact=1;
+    burst(boss.x, boss.y, boss.w, boss.h, 46, 7*U, 260);
     boss=null;
-    SFX.smash();
-    shake("quake");
+    SFX.smash(); shake("quake");
+    defeated();
   }
-  kak.arc = fin.hit ? Math.max(0, 1-(t-fin.hitAt)/520) : 0;
-  if(t>=2050 && !fin.won) win();
+  kak.arc = fin.hit ? Math.max(0, 1-(t-fin.hitAt)/450) : 0;
+  if(t>=1950 && !fin.won) win();
 }
+let bannerTimer=null;
+function defeated(){
+  const m=MAILS[i], b=$("banner");
+  b.innerHTML=`<b>${m.bossName.toUpperCase()} DEFEATED:</b> ${m.scam}`;
+  /* on the ground strip, under where the boss stood, so it never covers her speech bubble */
+  const bw=b.offsetWidth, cx=Math.min(W-bw/2-8, Math.max(bw/2+8, (fin && fin.bossCx) || W/2));
+  b.style.transform=`translate(${Math.round(cx-bw/2)}px,${Math.round(GY+6)}px)`;
+  b.classList.add("show");
+  clearTimeout(bannerTimer); bannerTimer=setTimeout(hideBanner, 2400);
+}
+function hideBanner(){ clearTimeout(bannerTimer); $("banner").classList.remove("show"); }
 function win(){
   fin.won=true; fin.pose="victory"; kak.arc=0;
   scene="won"; ready=true;
@@ -1159,8 +698,8 @@ function win(){
   $("lesson").innerHTML=`<span class="tag">${m.tag}</span><span class="txt">${m.lesson}</span>`;
   $("lesson").classList.remove("hidden");
   const n=$("btnNext"); n.disabled=false; n.textContent=(i===MAILS.length-1)?"RECAP":"NEXT";
-  sr(`Reported. ${m.bossName} defeated. ${m.tag.replace(/&mdash;/g,"-")}. NEXT is now available.`);
-  label(`Kak Timah defeated ${m.bossName} and is celebrating`);
+  sr(`Reported. ${m.bossName} defeated: ${m.scam}. NEXT is now available.`);
+  label(`Kak Timah defeated the ${m.bossName} and is celebrating`);
 }
 
 /* ================= loop ================= */
@@ -1174,9 +713,8 @@ function update(dt, now){
   const s=dt/1000;
   speed += (targetSpeed-speed)*Math.min(1, s*7);
   if(Math.abs(speed)<0.5 && targetSpeed===0) speed=0;
-  scroll += speed*s;
-  const f = RUN ? speed/RUN : 0;                  /* monsters slow down with her */
-
+  if(!reduce) scroll += speed*s;
+  const f = RUN ? speed/RUN : 0;
   if(!reduce) clouds.forEach(c=>{ c.x -= (8 + speed*0.12)*s; if(c.x<-40){ c.x=W+Math.random()*160; c.y=14+Math.random()*50; } });
 
   if(scene==="chase" && !reduce && !trip){
@@ -1184,140 +722,113 @@ function update(dt, now){
     spawnIn-=dt; if(spawnIn<=0){ spawn(); spawnIn=1000+Math.random()*1200; }
     cool-=dt;
     if(cool<=0){
-      const tgt=mons.filter(m=>!m.targeted && !m.dead && m.x<W-16 && m.x>kak.x+KW()*0.9).sort((a,b)=>a.x-b.x)[0];
+      const tgt=mons.filter(m=>!m.targeted && !m.dead && m.x<W-16 && m.x>kak.x+40*S).sort((a,b)=>a.x-b.x)[0];
       if(tgt){ fire(tgt); cool=420; }
     }
-    dustIn-=dt; if(dustIn<=0){ dust(kak.x+14*S,1); dustIn=140; }
   }
   if(trip) tripUpdate(dt);
   if(fin && scene==="finale") finUpdate(dt);
 
-  if(!reduce) for(const m of mons){ m.x -= (speed + m.v*f)*s; m.t += dt*(0.3+0.7*f); }
+  if(!reduce) for(const m of mons){ m.x -= (speed + MINION[m.type].v*U*f)*s; m.t += dt*(0.3+0.7*f); }
   for(const b of bolts){
-    const tx=b.m.x+b.m.w/2, ty=monY(b.m)+b.m.h/2, dx=tx-b.x, dy=ty-b.y, d=Math.hypot(dx,dy);
+    const box=monBox(b.m), tx=box.x+box.w/2, ty=box.y+box.h/2, dx=tx-b.x, dy=ty-b.y, d=Math.hypot(dx,dy);
     b.a=Math.atan2(dy,dx);
     if(d<12 || b.m.dead){ if(!b.m.dead) pop(b.m); b.done=true; }
     else { b.x+=dx/d*760*s; b.y+=dy/d*760*s; }
   }
   bolts=bolts.filter(b=>!b.done);
-  mons=mons.filter(m=>!m.dead && m.x>-80);
-  for(const p of parts){ p.vy+=p.g*s; p.x+=p.vx*s; p.y+=p.vy*s; p.life-=dt;
-    if(p.y>GY-p.s && p.vy>0){ p.y=GY-p.s; p.vy*=-0.25; p.vx*=0.6; } }
-  parts=parts.filter(p=>p.life>0);
+  mons=mons.filter(m=>!m.dead && m.x>-120);
+  for(const p of bits){ p.vy+=500*s; p.x+=p.vx*s; p.y+=p.vy*s; p.life-=dt; }
+  bits=bits.filter(p=>p.life>0);
   puffs.forEach(p=>p.t+=dt); puffs=puffs.filter(p=>p.t<650);
-  slashes.forEach(sl=>sl.t+=dt); slashes=slashes.filter(sl=>sl.t<sl.dur);
-  if(flash>0) flash=Math.max(0, flash-s*3.2);
+  if(impact>0) impact=Math.max(0, impact-s*6);
 
-  /* which picture of her to show */
-  /* which pose, and how far through it (pt) */
+  /* her pose */
   const hop = reduce ? 0 : Math.min(1,(now%1300)/450);
   let pose="stand", pt=0;
-  if(now-kak.ouchAt<1100){ pose="ouch"; pt = reduce ? 0.3 : (now-kak.ouchAt)/1100; }
-  else if(trip){ pose="trip"; pt=trip.k; }
-  else if(scene==="over"){ pose="trip"; pt=1; }
+  if(now-kak.ouchAt<1100){ pose="ouch"; pt=(now-kak.ouchAt)/1100; }
+  else if(trip){ pose="trip"; pt=reduce?0.3:trip.t/TRIP_MS; }
   else if(scene==="finale"){ pose=fin.pose; pt=pose==="victory"?hop:0; }
   else if(scene==="chase"){
     if(reduce || now<shootUntil) pose="shoot";
-    else { pose="run"; pt=(runT%440)/440; }
+    else { pose="run"; pt=runT/140; }
   }
   else if(scene==="won"||scene==="done"){ pose="victory"; pt=hop; }
   kak.pose=pose; kak.pt=pt;
 
-  /* poke target + bubble follow her */
-  const d=$("det");
-  d.style.transform=`translate(${Math.round(kak.x)}px,${Math.round(kakTop())}px)`;
-  d.style.width=Math.round(KW())+"px"; d.style.height=Math.round(KH())+"px";
+  const st=K("stand"), d=$("det");
+  d.style.transform=`translate(${Math.round(kak.x-st.foot*S)}px,${Math.round(GY+3-st.h*S)}px)`;
+  d.style.width=Math.round(st.w*S)+"px"; d.style.height=Math.round(st.h*S)+"px";
   placeTalk();
 }
 const DASHES=[[16,8,9],[44,13,3],[71,7,13],[103,12,5],[127,9,3],[149,14,8],[178,8,6]];
-function draw(){
+function draw(now){
   ctx.setTransform(DPR,0,0,DPR,0,0);
   ctx.clearRect(0,0,W,H);
   ctx.imageSmoothingEnabled=false;
   const R=Math.round;
+  ctx.fillStyle="#A8A8A8";
+  for(const c of clouds) CLOUD.forEach((row,y)=>{ for(let x=0;x<row.length;x++) if(row[x]==="l") ctx.fillRect(R(c.x+x*2*U), R(c.y+y*2*U), Math.ceil(2*U), Math.ceil(2*U)); });
 
-  for(const c of clouds) ctx.drawImage(ART.cloud, R(c.x), R(c.y), ART.cloud.width*2*S/1.5, ART.cloud.height*2*S/1.5);
-
-  /* ground, scrolling like the dino game */
   ctx.fillStyle="#535353"; ctx.fillRect(0,GY,W,2);
   ctx.fillStyle="#A8A8A8";
   const off=((scroll%200)+200)%200;
   for(let x0=-off; x0<W; x0+=200) for(const [dx,dy,w] of DASHES) ctx.fillRect(R(x0+dx), GY+dy, w, 2);
 
-  for(const m of mons){
-    const fr=ART.min[m.type][reduce?0:Math.floor(m.t/(m.type==="spam"?110:150))%2];
-    ctx.drawImage(fr, R(m.x), R(monY(m)), m.w, m.h);
-  }
-  if(boss) ctx.drawImage(boss.art, R(boss.x), R(boss.y), boss.w, boss.h);
+  for(const m of mons){ const b=monBox(m); ctx.drawImage(b.img, R(b.x), R(b.y), R(b.w), R(b.h)); }
+  if(boss){ const bob = boss.landed && !reduce && Math.floor(now/450)%2 ? -2*U : 0;     /* gentle 2-frame idle bob */
+    ctx.drawImage(boss.img, R(boss.x), R(boss.y+bob), R(boss.w), R(boss.h)); }
 
-  drawKak(ctx, ART.kak, kak.pose, kak.pt, kak.x+KW()/2, GY+3, S, {arc:kak.arc, noDust:true});
-  ctx.imageSmoothingEnabled=false;
-  for(const p of puffs) if(p.t>=0){ const k=p.t/650; dustPuff(ctx, p.x, GY+2-k*6, S*(1+k*0.4), 1-k*k); }
+  drawKak();
+  for(const p of puffs) if(p.t>=0){ const k=p.t/650; dustPuff(p.x, GY+2-k*6, 1-k*k); }
 
   for(const b of bolts){
     ctx.save(); ctx.translate(b.x,b.y); ctx.rotate(b.a);
-    ctx.fillStyle="#1C1C1C"; ctx.fillRect(-7,-2,14,4);
+    ctx.fillStyle="#1A1A1A"; ctx.fillRect(-7,-2,14,4);
     ctx.fillStyle="#FFFFFF"; ctx.fillRect(-5,-1,10,2);
     ctx.restore();
   }
-  for(const p of parts){
-    ctx.globalAlpha=Math.min(1, p.life/220);
-    ctx.fillStyle=p.c; ctx.fillRect(R(p.x),R(p.y),p.s,p.s);
-  }
+  for(const p of bits){ ctx.globalAlpha=Math.max(0,p.life/p.max); ctx.fillStyle="#1A1A1A"; ctx.fillRect(R(p.x)-1,R(p.y)-1,p.s+2,p.s+2); ctx.fillStyle=p.c; ctx.fillRect(R(p.x),R(p.y),p.s,p.s); }
   ctx.globalAlpha=1;
-  for(const sl of slashes){
-    if(sl.t<0) continue;
-    const k=sl.t/sl.dur, grow=Math.min(1,k*4);
-    const x1=sl.x0+(sl.x1-sl.x0)*grow, y1=sl.y0+(sl.y1-sl.y0)*grow;
-    ctx.globalAlpha=1-k*k;
-    ctx.lineCap="square";
-    ctx.strokeStyle="#1C1C1C"; ctx.lineWidth=9; ctx.beginPath(); ctx.moveTo(sl.x0,sl.y0); ctx.lineTo(x1,y1); ctx.stroke();
-    ctx.strokeStyle="#FFFFFF"; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(sl.x0,sl.y0); ctx.lineTo(x1,y1); ctx.stroke();
+  if(impact>0 && fin){            /* short white flash at the point of impact only */
+    ctx.globalAlpha=impact*0.8; ctx.fillStyle="#FFFFFF";
+    ctx.beginPath(); ctx.arc(kak.x+50*S, GY-50*S, 40*S, 0, 7); ctx.fill(); ctx.globalAlpha=1;
   }
-  ctx.globalAlpha=1;
-  if(flash>0){ ctx.fillStyle=`rgba(255,255,255,${flash})`; ctx.fillRect(0,0,W,H); }
 }
 
 /* ---------- poke ---------- */
-const OUCH=["<b>AUCH!</b>","<b>OW.</b> Mind my glasses.","<b>AUCH!</b> Poke the monsters, not me.","<b>OI!</b> I&rsquo;m working here."];
+const OUCH=["Hey! I&rsquo;m trying to protect us!","Aduh!","Hey, my glasses!","Gotcha, malware! &hellip;oh, it&rsquo;s you.","Poke the email, not me!","Focus! The monsters are coming!"];
+let lastOuch=-1;
 function poke(){
-  if(poking || trip || scene==="finale" || scene==="over") return;
+  if(poking || trip || scene==="finale") return;
   poking=true;
   backLine=$("line").innerHTML;
-  setLine(OUCH[Math.floor(Math.random()*OUCH.length)]);
+  let n; do { n=Math.floor(Math.random()*OUCH.length); } while(n===lastOuch);   /* never the same line twice in a row */
+  lastOuch=n;
+  setLine(OUCH[n]);
   kak.ouchAt=performance.now();
-  setTimeout(()=>{ poking=false; setLine(backLine); }, reduce?800:1100);
+  setTimeout(()=>{ poking=false; setLine(backLine); }, reduce?900:1100);
 }
 
-/* ================= briefing ================= */
+/* ================= intro ================= */
 const BRIEF=[
-  "Six messages landed in this inbox overnight.",
-  "Every one of them is lying about something.",
-  "I can&rsquo;t tell which part. <b>That is where you come in.</b>",
-  "Click the lie to report it. Wrong clicks cost a heart &mdash; you have four."
+  "Kak Timah needs your eyes.",
+  "<b>Click the lie in each email to report it.</b>",
+  "Careful: 4 hearts only."
 ];
 let typing=false, typed=false;
-function skipTyping(){
-  if(typed) return;
-  typing=false; typed=true;
-  BRIEF.forEach((t,n)=>$("bl"+n).innerHTML=t);
-}
+function skipTyping(){ if(typed) return; typing=false; typed=true; BRIEF.forEach((t,n)=>$("bl"+n).innerHTML=t); }
 function typeBrief(){
-  typing=true;
-  let li=0;
+  typing=true; let li=0;
   const step=()=>{
     if(li>=BRIEF.length){ typing=false; typed=true; return; }
-    const el=$("bl"+li), src=BRIEF[li];
-    let k=0;
+    const el=$("bl"+li), src=BRIEF[li]; let k=0;
     const tick=()=>{
       if(!typing) return;
       if(k>=src.length){ el.innerHTML=src; li++; setTimeout(step,320); return; }
-      if(src[k]==="<"||src[k]==="&"){
-        const end=src.indexOf(src[k]==="<"?">":";",k);
-        k = end===-1 ? k+1 : end+1;
-      } else k++;
+      if(src[k]==="<"||src[k]==="&"){ const end=src.indexOf(src[k]==="<"?">":";",k); k = end===-1 ? k+1 : end+1; } else k++;
       el.innerHTML=src.slice(0,k)+'<span class="caret">_</span>';
-      setTimeout(tick,22);
+      setTimeout(tick,24);
     };
     tick();
   };
@@ -1330,6 +841,7 @@ function controls(html){ $("controls").innerHTML=html; }
 function render(){
   const m=MAILS[i];
   solved=false; ready=false; done=false; poking=false;
+  hearts=MAXH; drawHearts();                 /* hearts refill on every new email */
   scoreboard();
   $("lesson").classList.add("hidden");
   $("mail").classList.remove("locked");
@@ -1343,104 +855,63 @@ function render(){
       <div class="stamp">${m.stamp}</div>
     </div>
     <div class="body">${m.body}</div>`;
-
   $("mail").querySelectorAll(".tap").forEach(el=>{
     el.tabIndex=0; el.setAttribute("role","button");
     el.addEventListener("click",()=>pick(el));
     el.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(el); } });
   });
-
-  /* NEXT stays locked until the clue is reported */
   controls('<button class="ctl" id="btnHint">HINT</button><button class="ctl go" id="btnNext" disabled>NEXT</button>');
-  $("btnHint").addEventListener("click",()=>{ if(!solved && !over) say(MAILS[i].hint); });
+  $("btnHint").addEventListener("click",()=>{ if(!solved) say(MAILS[i].hint); });
   $("btnNext").addEventListener("click",next);
-
   startChase();
   ask();
 }
-
 function ask(){
-  if(solved || over) return;
+  if(solved) return;
   say('Something in here is lying to me. <b>I cannot tell what.</b><span class="caret">_</span>');
 }
-
-const SHRUGS=["Hmm. That part checks out.","No &mdash; I looked at that already.","That one is fine. Keep going.","Warm. But not quite."];
-
 function pick(el){
-  if(solved || over || !started) return;
-
+  if(solved || !started) return;
   if(el.dataset.flag==="1"){
     solved=true; found++;
+    clearTimeout(talkTimer);
     scoreboard();
     el.classList.add("hit");
     $("mail").classList.add("locked");
     startFinale();
     return;
   }
-
   el.classList.add("no");
   setTimeout(()=>el.classList.remove("no"),480);
-  if(trip) return;                       /* already on the floor: don't charge twice */
-
-  hearts--;
-  drawHearts(hearts);
-  SFX.hurt();
-  const left=hearts;
-  if(left<=0){
-    startTrip(true);
-    say("<b>OOF!</b> That was my last heart.");
-    sr("Not the clue. That was your last heart.");
-    setTimeout(gameOver, reduce?1100:1500);
-    return;
-  }
-  startTrip(false);
-  say(`<b>OOF!</b> ${reduce?"I tripped &mdash; one heart gone. ":""}${SHRUGS[Math.floor(Math.random()*SHRUGS.length)]}`);
-  sr(`Not the clue. You lost a heart. ${left} of ${MAXH} left.`);
-  setTimeout(()=>{ if(!solved && !over && scene==="chase") ask(); }, 2300);
+  if(trip) return;                       /* still on the floor: don't charge twice */
+  startTrip();
+  sr(hearts>1 ? `Not the clue. You lose a heart.` : `Not the clue.`);
+  /* after she gets back up: two bubbles, then back to running */
+  clearTimeout(talkTimer);
+  talkTimer=setTimeout(()=>{
+    if(solved) return;
+    sayRun([["Oops, let&rsquo;s try again!",1500],["Think before you click&hellip;",2000]], ()=>{ if(!solved && scene==="chase") ask(); });
+  }, reduce?0:TRIP_MS);
 }
-
-function next(){
-  if(!ready) return;
-  if(i<MAILS.length-1){ i++; render(); } else finish();
-}
-function restart(){
-  i=0; found=0; hearts=MAXH; over=false; done=false;
-  drawHearts();
-  render();
-}
+function next(){ if(!ready) return; hideBanner(); if(i<MAILS.length-1){ i++; render(); } else finish(); }
+function restart(){ i=0; found=0; trips=0; done=false; render(); }
 
 function finish(){
   done=true; solved=true; scene="done"; mons=[]; bolts=[]; boss=null; targetSpeed=0;
   kak.x=homeX(); kak.arc=0;
   $("lesson").classList.add("hidden");
   $("mail").classList.add("locked");
+  const tripTxt = `${trips} trip${trips===1?"":"s"}`;
   $("mail").innerHTML=`<div class="body"><div class="recap">
     <h2>SIX THINGS TO CHECK</h2>
-    <p class="sub">before you click anything</p>
+    <p class="sub"><b>Caught ${found} of ${MAILS.length} &middot; ${tripTxt}</b> &middot; before you click anything</p>
     ${RECAP}</div></div>`;
   $("mail").style.fontFamily="var(--px)";
   controls('<button class="ctl go" id="btnAgain">RUN IT AGAIN</button>');
   $("btnAgain").addEventListener("click",restart);
-  say((found===MAILS.length ? "<b>All six.</b> " : `<b>${found} of ${MAILS.length}.</b> `)
-      + "Nice work! Reporting is what really matters.");
+  say((found===MAILS.length ? "<b>All six.</b> " : `<b>${found} of ${MAILS.length}.</b> `) + "Nice work! Reporting is what really matters.");
+  sr(`Caught ${found} of ${MAILS.length}, ${tripTxt}.`);
   label("Kak Timah celebrating after all six monsters were reported");
-}
-
-function gameOver(){
-  over=true; scene="over"; trip=null; mons=[]; bolts=[]; boss=null; targetSpeed=0;
-  $("lesson").classList.add("hidden");
-  $("mail").classList.add("locked");
-  $("mail").innerHTML=`<div class="body"><div class="recap">
-    <h2>KAK TIMAH NEEDS A REST</h2>
-    <p class="sub">Out of hearts on email ${i+1} of ${MAILS.length}. Six things to check before you click:</p>
-    ${RECAP}</div></div>`;
-  $("mail").style.fontFamily="var(--px)";
-  controls('<button class="ctl go" id="btnAgain">TRY AGAIN</button>');
-  $("btnAgain").addEventListener("click",restart);
-  SFX.sad();
-  say("Phew. Let me catch my breath &mdash; then we go again.");
-  sr("Out of hearts. Kak Timah needs a rest. Try again starts from the first email with four hearts.");
-  label("Kak Timah is lying on the ground, out of hearts");
 }
 
 /* ================= start ================= */
@@ -1453,29 +924,24 @@ function start(){
   layout();
   render();
 }
-
 $("det").addEventListener("click",poke);
 $("det").addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); poke(); } });
-
 $("snd").addEventListener("click",()=>{
   soundOn=!soundOn; unlocked=true;
   try{ localStorage.setItem("kt-sound", soundOn?"on":"off"); }catch(e){}
   sndButton();
   if(soundOn) SFX.pop();
 });
-/* browsers only allow sound after a real click or key press */
 ["pointerdown","keydown"].forEach(t=>addEventListener(t,()=>{ unlocked=true; },{capture:true}));
 
 layout();
 kak.x=homeX();
-sndButton();
-drawHearts();
-scoreboard();
+sndButton(); drawHearts(); scoreboard();
 say("Morning! I&rsquo;m Kak Timah. Grab a coffee, this will not take long.");
 controls('<button class="ctl go" id="btnStart">OPEN THE INBOX</button><span class="note">6 MESSAGES &nbsp;/&nbsp; 3 MINUTES</span>');
 $("btnStart").addEventListener("click",start);
 setTimeout(()=>{ reduce ? skipTyping() : typeBrief(); }, reduce?0:600);
-requestAnimationFrame(frame);
+artReady.then(()=>requestAnimationFrame(frame));
 
 addEventListener("keydown",e=>{
   if(e.metaKey||e.ctrlKey||e.altKey) return;
@@ -1486,21 +952,16 @@ addEventListener("keydown",e=>{
   if(!started) return;
   if(k==="n"){
     e.preventDefault();
-    if(over||done) restart();
+    if(done) restart();
     else if(ready) next();
     else if(!solved) say("Report the lie first &mdash; <b>then</b> NEXT.");   /* no skipping */
   }
-  if(k==="h" && !solved && !over){ e.preventDefault(); say(MAILS[i].hint); }
+  if(k==="h" && !solved){ e.preventDefault(); say(MAILS[i].hint); }
 });
-
 let rz;
 addEventListener("resize",()=>{
   clearTimeout(rz);
-  rz=setTimeout(()=>{
-    layout();
-    if(scene!=="won" && scene!=="finale") kak.x=homeX();
-    else kak.x=Math.min(kak.x, W-KW());
-  },120);
+  rz=setTimeout(()=>{ layout(); if(scene!=="won" && scene!=="finale") kak.x=homeX(); },120);
 });
 </script>
 </body>
