@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Spot It — Inbox Edition</title>
+<title>Spot and Report with Kak Timah</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%23535353' d='M5 1h4v1h1v1h1v4h-1v1h-1v1H5V8H4V7H3V3h1V2h1zm0 2v4h4V3z'/%3E%3Cpath fill='%23535353' d='M10 9h2v1h1v1h1v1h1v2h-2v-1h-1v-1h-1v-1h-1z'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,10 +31,12 @@
 
   /* ---------- hud ---------- */
   .hud{
-    display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+    display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;
     font-size:11px;letter-spacing:.16em;color:var(--ink);
   }
-  .hud .sc{color:var(--mid);font-size:10px;letter-spacing:.2em}
+  .hud .title{line-height:1.7}
+  .hud .nw{white-space:nowrap}
+  .hud .sc{color:var(--mid);font-size:10px;letter-spacing:.2em;flex:none}
   .hud .sc b{color:var(--ink);font-weight:400}
 
   /* ---------- stage ---------- */
@@ -141,7 +143,11 @@
     position:absolute;left:18px;bottom:44px;width:var(--det);
     cursor:pointer;transform-origin:50% 100%;
   }
-  .det svg{display:block;width:100%;height:auto;image-rendering:pixelated}
+  .det svg{display:block;width:100%;height:auto;image-rendering:pixelated;pointer-events:none}   /* sprite is redrawn mid-click; let the click land on .det */
+  .det.flip svg{transform:scaleX(-1)}
+  .talk.away{visibility:hidden}
+  .talk.pop{animation:pop .2s steps(3)}
+  @keyframes pop{0%{scale:.9;opacity:0}100%{scale:1;opacity:1}}
   .det:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   .det.ouch{animation:ouch .5s steps(4)}
   @keyframes ouch{
@@ -199,7 +205,7 @@
 <body>
 
 <div class="wrap hud">
-  <span>SPOT IT</span>
+  <span class="title"><span class="nw">SPOT AND REPORT</span> <span class="nw">WITH KAK TIMAH</span></span>
   <span class="sc" id="score">CAUGHT <b>00</b> / 06</span>
 </div>
 
@@ -228,14 +234,16 @@
 
 <script>
 /* ================= sprites ================= */
+/* Kak Timah: hijab, round glasses, long dress, magnifying glass */
 const POSES = {
-  stand:["................................","...........##########...........","..........############..........","..........############..........","..........++++++++++++..........",".....######################.....","......++++++++++++++++++++......","...........++++++++++...........","...........##ww##ww##...........","...........##########...........","...........####++####...........","............########............","..............####..............","...###....#####++#####..........","..#ooo#..#####++++#####.........",".#ohooo######++++++#####........",".#ooooo##w###++++++###w##.......",".#ooooo##w###++++++###w##.......","..#ooo###w###++++++###w##.......","...###++#w###++++++###w##.......",".......##w###++++++###w##.......",".......++++++++ww++++++++.......",".......##w############w##.......",".......########ww########.......",".......########ww########.......","........#######..#######........","..........####....####..........","..........####....####..........","..........####....####..........",".........######..######.........",".........++++++..++++++.........","................................"],
-  walk1:["................................","...........##########...........","..........############..........","..........############..........","..........++++++++++++..........",".....######################.....","......++++++++++++++++++++......","...........++++++++++...........","...........##ww##ww##...........","...........##########...........","...........####++####...........","............########............","..............####..............","...###....#####++#####..........","..#ooo#..#####++++#####.........",".#ohooo######++++++#####........",".#ooooo##w###++++++###w##.......",".#ooooo##w###++++++###w##.......","..#ooo###w###++++++###w##.......","...###++#w###++++++###w##.......",".......##w###++++++###w##.......",".......++++++++ww++++++++.......",".......##w############w##.......",".......########ww########.......",".......########ww########.......","........#######..#######........","..........####....####..........","..........####....####..........",".........####......####.........","........######.....######.......","........++++++..................","................................"],
-  walk2:["................................","...........##########...........","..........############..........","..........############..........","..........++++++++++++..........",".....######################.....","......++++++++++++++++++++......","...........++++++++++...........","...........##ww##ww##...........","...........##########...........","...........####++####...........","............########............","..............####..............","...###....#####++#####..........","..#ooo#..#####++++#####.........",".#ohooo######++++++#####........",".#ooooo##w###++++++###w##.......",".#ooooo##w###++++++###w##.......","..#ooo###w###++++++###w##.......","...###++#w###++++++###w##.......",".......##w###++++++###w##.......",".......++++++++ww++++++++.......",".......##w############w##.......",".......########ww########.......",".......########ww########.......","........#######..#######........","..........####....####..........","..........####....####..........","...........####..####...........","..........############..........","................++++++..........","................................"],
-  found:["................................","...........##########...........","..........############..........","...###....############..........","..#ooo#...++++++++++++..........",".#ooooo####################.....",".#ooooo#++++++++++++++++++......",".#ooooo#...++++++++++...........","..#ooo#....##ww##ww##...........","...###.....##########...........","....++.....####++####...........",".....++.....########............","......++......####..............",".......++.#####++#####..........",".........#####++++#####.........","........#####++++++#####........",".......##w###++++++###w##.......",".......##w###++++++###w##.......",".......##w###++++++###w##.......",".......##w###++++++###w##.......",".......##w###++++++###w##.......",".......++++++++ww++++++++.......",".......##w############w##.......",".......########ww########.......",".......########ww########.......","........#######..#######........","..........####....####..........","..........####....####..........","..........####....####..........",".........######..######.........",".........++++++..++++++.........","................................"],
-  ouch:["..........############..........","..........############..........","..........++++++++++++..........",".....######################.....","......++++++++++++++++++++......","................................",".......##..............##.......","...........++++++++++...........","...........##ww##ww##...........","...........##########...........","...........####++####...........","............########............","..............####..............","...###....#####++#####..........","..#ooo#..#####++++#####.........",".#ohooo######++++++#####........",".#ooooo##w###++++++###w##.......",".#ooooo##w###++++++###w##.......","..#ooo###w###++++++###w##.......","...###++#w###++++++###w##.......",".......##w###++++++###w##.......",".......++++++++ww++++++++.......",".......##w############w##.......",".......########ww########.......",".......########ww########.......","........#######..#######........","..........####....####..........","..........####....####..........","..........####....####..........",".........######..######.........",".........++++++..++++++.........","................................"]
+  stand:["................................","............########............","..........##++++++++##..........",".........#++++++++++++#.........","........#++++++++++++++#........","........#+++++....+++++#........","........#++..........++#........","........#++.##....##.++#........","........#++#..####..#++#........","........#++##.#..##.#++#........","........#++.##....##.++#........","........#++..........++#........","........#+++...##...+++#........","..###....#++++....++++#.........",".#...#..#++++++++++++++#........","#.#...###++++++++++++++##.......","#.....####++++++++++++###.......","#.....####++++++++++++###.......",".#...#.####++++++++++####.......","..###+.######++++++######.......","......+##################.......",".....++##################++.....",".....++.################.++.....",".........++++++++++++++.........",".........##############.........",".........######+#######.........","........#######+########........","........#######+########........",".......##################.......","..........###......###..........","..........+++......+++..........","................................"],
+  walk1:["................................","............########............","..........##++++++++##..........",".........#++++++++++++#.........","........#++++++++++++++#........","........#+++++....+++++#........","........#++..........++#........","........#++.##....##.++#........","........#++#..####..#++#........","........#++##.#..##.#++#........","........#++.##....##.++#........","........#++..........++#........","........#+++...##...+++#........","..###....#++++....++++#.........",".#...#..#++++++++++++++#........","#.#...###++++++++++++++##.......","#.....####++++++++++++###.......","#.....####++++++++++++###.......",".#...#.####++++++++++####.......","..###+.######++++++######.......","......+##################.......",".....++##################++.....",".....++.################.++.....",".........++++++++++++++.........","........##############..........","........######+#######..........",".......#######+########.........",".......#######+########.........","......##################........",".......###.......###............",".......+++.......+++............","................................"],
+  walk2:["................................","............########............","..........##++++++++##..........",".........#++++++++++++#.........","........#++++++++++++++#........","........#+++++....+++++#........","........#++..........++#........","........#++.##....##.++#........","........#++#..####..#++#........","........#++##.#..##.#++#........","........#++.##....##.++#........","........#++..........++#........","........#+++...##...+++#........","..###....#++++....++++#.........",".#...#..#++++++++++++++#........","#.#...###++++++++++++++##.......","#.....####++++++++++++###.......","#.....####++++++++++++###.......",".#...#.####++++++++++####.......","..###+.######++++++######.......","......+##################.......",".....++##################++.....",".....++.################.++.....",".........++++++++++++++.........","..........##############........","..........######+#######........",".........#######+########.......",".........#######+########.......","........##################......","............###..###............","............+++..+++............","................................"],
+  think:["................................","............########............","..........##++++++++##..........",".........#++++++++++++#.........","........#++++++++++++++#........","........#+++++....+++++#........","........#++..........++#........","........#++.##....##.++#........","........#++#.######.#++#........","........#++#..#..#..#++#........","........#++.##....##.++#........","........#++.......++.++#........","........#+++...##.+++++#........","..###....#++++....##++#.........",".#...#..#++++++++++##++#........","#.#...###+++++++++++##+##.......","#.....####+++++++++++####.......","#.....####++++++++++++###.......",".#...#.####++++++++++####.......","..###+.######++++++######.......","......+##################.......",".....++##################.......",".....++.################........",".........++++++++++++++.........",".........##############.........",".........######+#######.........","........#######+########........","........#######+########........",".......##################.......","..........###......###..........","..........+++......+++..........","................................"],
+  found:["................................","..###.......########............",".#...#....##++++++++##..........","#.#...#..#++++++++++++#.........","#.....#.#++++++++++++++#........","#.....#.#+++++....+++++#........",".#...#..#++..........++#........","..###+..#++.##....##.++#........","......+.#++#..####..#++#........","......++#++##.#..##.#++#........","......###++.##....##.++#........","......###++...#..#...++#........","......###+++...##...+++#........","......##.#++++....++++#.........","......###++++++++++++++#........",".......##++++++++++++++##.......",".......###++++++++++++###.......",".......###++++++++++++###.......",".......####++++++++++####.......",".......######++++++######.......",".......##################.......",".......##################++.....","........################.++.....",".........++++++++++++++.........",".........##############.........",".........######+#######.........","........#######+########........","........#######+########........",".......##################.......","..........###......###..........","..........+++......+++..........","................................"],
+  ouch:["................................","............########............","..........##++++++++##..........",".........#++++++++++++#.........","........#++++++++++++++#........","........#+++++....+++++#........","........#++.##....##.++#........","........#++##########++#........","........#++#..#..#..#++#........","........#++.##....##.++#........","........#++..........++#........","........#++....##....++#........","........#+++...##...+++#........","..###....#++++....++++#.........",".#...#..#++++++++++++++#........","#.#...###++++++++++++++##.......","#.....####++++++++++++###.......","#.....####++++++++++++###.......",".#...#.####++++++++++####.......","..###+.######++++++######.......","......+##################.......",".....++##################++.....",".....++.################.++.....",".........++++++++++++++.........",".........##############.........",".........######+#######.........","........#######+########........","........#######+########........",".......##################.......","..........###......###..........","..........+++......+++..........","................................"]
 };
-const SPAL = {"#":"#535353","+":"#A8A8A8"};   /* w, o, h fall through to paper */
+const SPAL = {"#":"#535353","+":"#A8A8A8"};   /* "." falls through to paper */
 function sprite(name){
   const g=POSES[name], r=[];
   for(let y=0;y<g.length;y++)
@@ -243,7 +251,7 @@ function sprite(name){
       const c=SPAL[g[y][x]];
       if(c) r.push(`<rect x="${x}" y="${y}" width="1" height="1" fill="${c}"/>`);
     }
-  return `<svg viewBox="0 0 32 32" aria-label="A pixel detective in a hat holding a magnifying glass">${r.join("")}</svg>`;
+  return `<svg viewBox="0 0 32 32" shape-rendering="crispEdges" role="img" aria-label="Kak Timah, a pixel-art woman in a hijab, round glasses and a long dress, holding a magnifying glass">${r.join("")}</svg>`;
 }
 
 /* ================= mails ================= */
@@ -251,14 +259,14 @@ const MAILS = [
   {
     subject:"Mailbox storage almost full",
     name:"IT Helpdesk", initials:"IT",
-    addr:'&lt;<span class="tap" data-flag="1">it-support@dentsu-helpdesk.com</span>&gt;',
+    addr:'&lt;<span class="tap" data-flag="1">it-support@petronas-helpdesk.com</span>&gt;',
     to:"to Wardina", stamp:"09:14",
     body:`<p>Hi Wardina,</p>
           <p>Your mailbox has reached <span class="tap">98% of its quota</span>. Please archive older items so incoming mail isn&rsquo;t rejected.</p>
           <p class="sig"><span class="tap">Regards,<br>Service Desk</span></p>`,
     hint:"Read everything after the @ sign. Slowly.",
     tag:"LOOKALIKE DOMAIN",
-    lesson:"Our real helpdesk sends from <b>@dentsu.com</b>. Anything with an extra word welded on &mdash; <b>-helpdesk</b>, <b>-support</b>, <b>-secure</b> &mdash; belongs to someone else. It only reads like us."
+    lesson:"Our real helpdesk sends from <b>@petronas.com</b>. Anything with an extra word welded on &mdash; <b>-helpdesk</b>, <b>-support</b>, <b>-secure</b> &mdash; belongs to someone else. It only reads like us."
   },
   {
     subject:"Action needed on your account",
@@ -274,12 +282,12 @@ const MAILS = [
   },
   {
     subject:"Your password expires today",
-    name:"dentsu Portal", initials:"dP",
-    addr:'&lt;<span class="tap">alerts@dentsu.com</span>&gt;',
+    name:"Petronas Portal", initials:"PP",
+    addr:'&lt;<span class="tap">alerts@petronas.com</span>&gt;',
     to:"to Wardina", stamp:"11:03",
     body:`<p>Reset your password here:</p>
-          <p><span class="tap link">portal.dentsu.com/reset</span><br>
-          <span class="urlbar tap" data-flag="1">dentsu-portal.verify-now.ru/login</span></p>
+          <p><span class="tap link">portal.petronas.com/reset</span><br>
+          <span class="urlbar tap" data-flag="1">petronas-portal.verify-now.ru/login</span></p>
           <p class="sig">Automated message &mdash; do not reply.</p>`,
     hint:"The words and the destination disagree.",
     tag:"MISMATCHED LINK",
@@ -288,7 +296,7 @@ const MAILS = [
   {
     subject:"Action required: device verification failed",
     name:"IT Service Desk", initials:"SD",
-    addr:'&lt;<span class="tap">servicedesk@dentsu.com</span>&gt;',
+    addr:'&lt;<span class="tap">servicedesk@petronas.com</span>&gt;',
     to:"to Wardina", stamp:"10:41",
     body:`<p>Hi Wardina,</p>
           <p><span class="tap">Your device failed this morning&rsquo;s routine verification check.</span> To restore access, complete the steps below:</p>
@@ -302,7 +310,7 @@ const MAILS = [
   {
     subject:"Quick favour",
     name:"Daniel Reyes (CISO)", initials:"DR",
-    addr:'&lt;<span class="tap">daniel.reyes@dentsu.com</span>&gt;<br>reply-to: <span class="tap" data-flag="1">daniel.reyes.ciso@gmail.com</span>',
+    addr:'&lt;<span class="tap">daniel.reyes@petronas.com</span>&gt;<br>reply-to: <span class="tap" data-flag="1">daniel.reyes.ciso@gmail.com</span>',
     to:"to Wardina", stamp:"13:27",
     body:`<p>In meetings all afternoon &mdash; are you at your desk?</p>
           <p><span class="tap">Need you to sort something out for me, will explain shortly.</span></p>
@@ -314,7 +322,7 @@ const MAILS = [
   {
     subject:"Annual account verification",
     name:"Security Team", initials:"ST",
-    addr:'&lt;<span class="tap">security@dentsu.com</span>&gt;',
+    addr:'&lt;<span class="tap">security@petronas.com</span>&gt;',
     to:"to Wardina", stamp:"08:05",
     body:`<p>As part of our annual access review, <span class="tap" data-flag="1">please reply with your username and current password</span> so we can confirm your account.</p>
           <p><span class="tap">This takes about two minutes.</span></p>`,
@@ -330,6 +338,7 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 let i=0, found=0, solved=false, done=false, started=false;
 let outroTimer=null;
 let pose="stand", poking=false, backLine="", backPose="stand", stepper=null;
+let gameLine="&nbsp;", gamePose="stand";
 const caught = new Array(MAILS.length).fill(false);
 
 function setSpeech(html,name){
@@ -337,7 +346,9 @@ function setSpeech(html,name){
   if(name){ pose=name; $("det").innerHTML=sprite(name); }
 }
 function say(html,name){
+  gameLine=html; if(name) gamePose=name;
   if(poking){ backLine=html; if(name) backPose=name; return; }
+  if(patrolling) return;
   setSpeech(html,name);
 }
 function scoreboard(){
@@ -349,6 +360,7 @@ function detW(){ return $("det").offsetWidth || 74; }
 function tailTo(px){
   $("tail").style.left = Math.max(16, Math.min(px + detW()/2 - 6, $("inner").clientWidth - 40)) + "px";
 }
+function detX(){ return parseFloat(($("det").style.transform.match(/-?[\d.]+/)||[0])[0]); }
 function home(){
   /* stop any walk still in progress, and its pending line, before resetting */
   clearInterval(stepper); stepper=null;
@@ -359,11 +371,11 @@ function home(){
 function walkTo(x, then){
   const d=$("det"), w=detW();
   const px=Math.max(0, Math.min(x - w/2, $("inner").clientWidth - 36 - w));
-  const cur=parseFloat((d.style.transform.match(/-?[\d.]+/)||[0])[0]);
+  const cur=detX();
   tailTo(px);
   if(reduce || Math.abs(px-cur)<4){ d.style.transform=`translateX(${px}px)`; then&&then(); return; }
 
-  /* dino-style: no easing. he steps. */
+  /* dino-style: no easing. she steps. */
   const frames=Math.max(6, Math.round(Math.abs(px-cur)/16));
   let n=0;
   clearInterval(stepper);
@@ -380,8 +392,51 @@ function walkTo(x, then){
   }, 70);
 }
 
+/* ---------- idle patrol ---------- */
+/* When nobody has touched anything for a while she wanders the floor,
+   stopping now and then to think out loud. Any input hands control back. */
+const PATROL=["Think before you click.","I love your focus!"];
+const IDLE_MS=7000;
+let idleTimer=null, patrolTimer=null, patrolling=false, patrolDir=1, patrolLine=0;
+
+function armIdle(){ clearTimeout(idleTimer); idleTimer=setTimeout(startPatrol, IDLE_MS); }
+function startPatrol(){
+  if(poking || stepper){ armIdle(); return; }   /* busy walking to a clue or saying ouch */
+  patrolling=true;
+  reduce ? patrolTalk() : patrolWalk();
+}
+function patrolWalk(){
+  if(!patrolling) return;
+  const w=detW(), max=$("inner").clientWidth-36-w, cur=detX();
+  if(cur>=max-4) patrolDir=-1; else if(cur<=4) patrolDir=1;   /* turn round at the edges */
+  const target=Math.max(0, Math.min(max, cur + patrolDir*Math.max(80, max/3)));
+  $("det").classList.toggle("flip", patrolDir<0);
+  $("talk").classList.add("away");
+  walkTo(target + w/2, ()=>{ patrolTimer=setTimeout(patrolTalk, 350); });
+}
+function patrolTalk(){
+  if(!patrolling) return;
+  setSpeech(PATROL[patrolLine], "think");
+  patrolLine=1-patrolLine;
+  const t=$("talk");
+  t.classList.remove("away","pop"); void t.offsetWidth;
+  if(!reduce) t.classList.add("pop");
+  /* reduced motion: stay put and just alternate the lines */
+  patrolTimer=setTimeout(reduce ? patrolTalk : patrolWalk, reduce ? 4000 : 2600);
+}
+function stopPatrol(){
+  if(!patrolling) return;
+  patrolling=false;
+  clearTimeout(patrolTimer); patrolTimer=null;
+  clearInterval(stepper); stepper=null;
+  $("det").classList.remove("flip");
+  $("talk").classList.remove("away","pop");
+  setSpeech(gameLine, gamePose);
+}
+function activity(){ stopPatrol(); armIdle(); }
+
 /* ---------- poke ---------- */
-const OUCH=["<b>AUCH!</b>","<b>OW.</b> That&rsquo;s my hat.","<b>AUCH!</b> Poke the mail, not me.","<b>OI!</b> I&rsquo;m working here."];
+const OUCH=["<b>AUCH!</b>","<b>OW.</b> Mind my glasses.","<b>AUCH!</b> Poke the mail, not me.","<b>OI!</b> I&rsquo;m working here."];
 function poke(){
   if(poking) return;
   poking=true;
@@ -535,12 +590,12 @@ function start(){
 
 $("det").innerHTML=sprite("stand");
 $("det").setAttribute("role","button");
-$("det").setAttribute("aria-label","Poke the detective");
+$("det").setAttribute("aria-label","Poke Kak Timah");
 $("det").tabIndex=0;
 $("det").addEventListener("click",poke);
 $("det").addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); poke(); } });
 
-setSpeech("Morning. Grab a coffee, this will not take long.","stand");
+say("Morning! I&rsquo;m Kak Timah. Grab a coffee, this will not take long.","stand");
 controls('<button class="ctl go" id="btnStart">OPEN THE INBOX</button><span class="note">6 MESSAGES &nbsp;/&nbsp; 3 MINUTES</span>');
 $("btnStart").addEventListener("click",start);
 scoreboard();
@@ -557,8 +612,12 @@ addEventListener("keydown",e=>{
   if(k==="h"&&!solved){ e.preventDefault(); say(MAILS[i].hint,"stand"); }
 });
 
+["pointerdown","keydown","wheel"].forEach(t=>addEventListener(t, activity, {capture:true, passive:true}));
+armIdle();
+
 let rz;
 addEventListener("resize",()=>{
+  activity();
   clearTimeout(rz);
   rz=setTimeout(()=>{
     if(!started||!solved||done) return home();
