@@ -249,8 +249,8 @@ const MAILS = [
     subject:"Mailbox storage almost full",
     name:"IT Helpdesk", initials:"IT",
     addr:'&lt;<span class="tap" data-flag="1">it-support@petronas-helpdesk.com</span>&gt;',
-    to:"to Wardina", stamp:"09:14",
-    body:`<p>Hi Wardina,</p>
+    to:"to Ifan Benz", stamp:"09:14",
+    body:`<p>Hi Ifan Benz,</p>
           <p>Your mailbox has reached <span class="tap">98% of its quota</span>. Please archive older items so incoming mail isn&rsquo;t rejected.</p>
           <p class="sig"><span class="tap">Regards,<br>Service Desk</span></p>`,
     hint:"Read everything after the @ sign. Slowly.",
@@ -268,14 +268,14 @@ const MAILS = [
           <p>Disregard this notice if verification is already complete.</p>`,
     hint:"Which sentence is trying to stop you thinking?",
     tag:"MANUFACTURED URGENCY",
-    lesson:"Real providers give you weeks and never open with a countdown. The panic <b>is</b> the attack &mdash; it exists so you click before you check.",
+    lesson:"Real providers give you weeks and never open with a countdown. The panic <b>is</b> the attack &mdash; it exists so you click before you think.",
     boss:"fireimp", bossName:"Fire Imp", scam:"Fake urgency"
   },
   {
     subject:"Your password expires today",
     name:"Petronas Portal", initials:"PP",
     addr:'&lt;<span class="tap">alerts@petronas.com</span>&gt;',
-    to:"to Wardina", stamp:"11:03",
+    to:"to Ifan Benz", stamp:"11:03",
     body:`<p>Reset your password here:</p>
           <p><span class="tap link">portal.petronas.com/reset</span><br>
           <span class="urlbar tap" data-flag="1">petronas-portal.verify-now.ru/login</span></p>
@@ -289,8 +289,8 @@ const MAILS = [
     subject:"Action required: device verification failed",
     name:"IT Service Desk", initials:"SD",
     addr:'&lt;<span class="tap">servicedesk@petronas.com</span>&gt;',
-    to:"to Wardina", stamp:"10:41",
-    body:`<p>Hi Wardina,</p>
+    to:"to Ifan Benz", stamp:"10:41",
+    body:`<p>Hi Ifan Benz,</p>
           <p><span class="tap">Your device failed this morning&rsquo;s routine verification check.</span> To restore access, complete the steps below:</p>
           <p><span class="tap" data-flag="1">1. Press <b>Windows + R</b><br>2. Press <b>Ctrl + V</b>, then Enter</span><br>
           <span class="urlbar tap">verification token already copied to your clipboard</span></p>
@@ -304,20 +304,20 @@ const MAILS = [
     subject:"Quick favour",
     name:"Daniel Reyes (CISO)", initials:"DR",
     addr:'&lt;<span class="tap">daniel.reyes@petronas.com</span>&gt;<br>reply-to: <span class="tap" data-flag="1">daniel.reyes.ciso@gmail.com</span>',
-    to:"to Wardina", stamp:"13:27",
+    to:"to Ifan Benz", stamp:"13:27",
     body:`<p>In meetings all afternoon &mdash; are you at your desk?</p>
           <p><span class="tap">Need you to sort something out for me, will explain shortly.</span></p>
           <p class="sig">Sent from my iPhone</p>`,
     hint:"Where would your reply actually land?",
     tag:"REPLY-TO SPOOF",
     lesson:"The From line can look flawless while <b>Reply-To</b> quietly points somewhere else. Your answer goes to the attacker, not to your CISO.",
-    boss:"ogre", bossName:"Two-headed Ogre", scam:"Reply-to spoof"
+    boss:"ogre", bossName:"Two-headed Ogre", scam:"Reply-To spoof"
   },
   {
     subject:"Annual account verification",
     name:"Security Team", initials:"ST",
     addr:'&lt;<span class="tap">security@petronas.com</span>&gt;',
-    to:"to Wardina", stamp:"08:05",
+    to:"to Ifan Benz", stamp:"08:05",
     body:`<p>As part of our annual access review, <span class="tap" data-flag="1">please reply with your username and current password</span> so we can confirm your account.</p>
           <p><span class="tap">This takes about two minutes.</span></p>`,
     hint:"What are they actually asking you to hand over?",
@@ -900,7 +900,7 @@ function pick(el){
   setTimeout(()=>el.classList.remove("no"),480);
   if(trip) return;                       /* still on the floor: don't charge twice */
   startTrip();
-  sr(hearts>1 ? `Not the clue. You lose a heart.` : `Not the clue.`);
+  sr(hearts>0 ? `Not the clue. You lose a heart.` : `Not the clue.`);
   /* after she gets back up: two bubbles, then back to running */
   clearTimeout(talkTimer);
   talkTimer=setTimeout(()=>{
@@ -952,7 +952,7 @@ $("snd").addEventListener("click",()=>{
 layout();
 kak.x=homeX();
 sndButton(); drawHearts(); scoreboard();
-say("Morning! I&rsquo;m Kak Timah. Grab a coffee, this will not take long.");
+say("Morning! I&rsquo;m Kak Timah. Grab a coffee &mdash; this will not take long.");
 controls('<button class="ctl go" id="btnStart">OPEN THE INBOX</button><span class="note">6 MESSAGES &nbsp;/&nbsp; 3 MINUTES</span>');
 $("btnStart").addEventListener("click",start);
 setTimeout(()=>{ reduce ? skipTyping() : typeBrief(); }, reduce?0:600);
