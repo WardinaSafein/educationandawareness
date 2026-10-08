@@ -828,7 +828,7 @@ function poke(){
 /* ================= intro ================= */
 const BRIEF=[
   "Kak Timah needs your eyes.",
-  "<b>Click the lie in each email to report it.</b>",
+  "<b>Click the suspicious line in each email to report it.</b>",
   "Careful: 4 hearts only."
 ];
 let typing=false, typed=false;
@@ -969,7 +969,7 @@ addEventListener("keydown",e=>{
     e.preventDefault();
     if(done) restart();
     else if(ready) next();
-    else if(!solved) say("Report the lie first &mdash; <b>then</b> NEXT.");   /* no skipping */
+    else if(!solved) say("Report the suspicious line first &mdash; <b>then</b> NEXT.");   /* no skipping */
   }
   if(k==="h" && !solved){ e.preventDefault(); say(MAILS[i].hint); }
 });
